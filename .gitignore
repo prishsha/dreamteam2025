@@ -1,0 +1,4 @@
+api/bin
+api/configs/config.yml
+api/tmp
+api/app.log
