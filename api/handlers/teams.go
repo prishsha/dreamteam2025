@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
 
 	db "github.com/milindmadhukar/dreamteam/db/sqlc"
@@ -14,7 +13,7 @@ func GetAllTeams(queries *db.Queries) http.HandlerFunc {
 		var resp map[string]interface{} = make(map[string]interface{})
 
 		allTeams, err := queries.GetAllTeams(
-			context.Background(),
+			r.Context(),
 		)
 
 		if err != nil {

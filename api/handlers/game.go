@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
@@ -67,7 +66,7 @@ func StartBidding(queries *db.Queries, clientManger *models.ClientManager, gameS
 
     // NOTE: idk the order as of now so just fetching the first id.
 
-    firstPlayer, err := queries.GetPlayer(context.Background(), 11)
+    firstPlayer, err := queries.GetPlayer(r.Context(), 11)
     if err != nil {
       resp["error"] = err.Error()
       log.Error().Msg(err.Error())

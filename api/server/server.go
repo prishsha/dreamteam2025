@@ -19,7 +19,7 @@ import (
 
 	db "github.com/milindmadhukar/dreamteam/db/sqlc"
 
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type Server struct {
@@ -103,11 +103,14 @@ func (s *Server) PrepareRouter() {
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
-	//Store Router in Struct
+
 	s.Router = r
 }
 
 func (s *Server) InitalizeGameState() {
+
+
+  // TODO: Should I persist the game state in case of server shutdown?
 
 	s.GameState = &models.GameState{
 		IsBiddingActive:    false,

@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS participant_teams (
     id SERIAL PRIMARY KEY,
     name VARCHAR(300) NOT NULL UNIQUE,
     balance INTEGER NOT NULL DEFAULT 50000000
+    CHECK (balance >= 0)
 );
 
 CREATE TABLE IF NOT EXISTS players (

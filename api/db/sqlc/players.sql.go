@@ -9,6 +9,30 @@ import (
 	"context"
 )
 
+const assignTeamToPlayer = `-- name: AssignTeamToPlayer :exec
+WITH player_update AS (
+    UPDATE players
+    SET team_id = $1
+    WHERE players.id = $2
+    RETURNING 1
+)
+UPDATE participant_teams
+SET balance = balance - $3
+WHERE participant_teams.id = $1
+    AND EXISTS (SELECT 1 FROM player_update)
+`
+
+type AssignTeamToPlayerParams struct {
+	ID      int32 `json:"id"`
+	ID_2    int32 `json:"id2"`
+	Balance int32 `json:"balance"`
+}
+
+func (q *Queries) AssignTeamToPlayer(ctx context.Context, arg AssignTeamToPlayerParams) error {
+	_, err := q.db.ExecContext(ctx, assignTeamToPlayer, arg.ID, arg.ID_2, arg.Balance)
+	return err
+}
+
 const getAllPlayers = `-- name: GetAllPlayers :many
 SELECT id, name, country, role, rating, base_price, avatar_url, team_id FROM players
 ORDER BY id

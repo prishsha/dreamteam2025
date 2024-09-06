@@ -11,6 +11,7 @@ import (
 
 const getAllTeams = `-- name: GetAllTeams :many
 SELECT id, name, balance FROM participant_teams
+ORDER BY id
 `
 
 func (q *Queries) GetAllTeams(ctx context.Context) ([]ParticipantTeam, error) {

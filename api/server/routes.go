@@ -18,11 +18,12 @@ func (s *Server) HandleRoutes(mainRouter *chi.Mux) {
 	adminRouter := chi.NewRouter()
 
 	mainRouter.Get("/players/all", handlers.GetAllPlayers(s.Queries))
-  mainRouter.Get("/teams/all", handlers.GetAllTeams(s.Queries))
+	mainRouter.Post("/players/assign-team", handlers.AssignTeamToPlayer(s.Queries, s.GameState))
 
-  mainRouter.Get("/game/ws", handlers.GameStateSocket(s.ClientManager, s.GameState))
-  mainRouter.Post("/game/start", handlers.StartBidding(s.Queries, s.ClientManager, s.GameState))
+	mainRouter.Get("/teams/all", handlers.GetAllTeams(s.Queries))
 
+	mainRouter.Get("/game/ws", handlers.GameStateSocket(s.ClientManager, s.GameState))
+	mainRouter.Post("/game/start", handlers.StartBidding(s.Queries, s.ClientManager, s.GameState))
 
 	fileRouter := chi.NewRouter()
 	handlers.FileServer(fileRouter, "/", http.Dir("./assets/"))
