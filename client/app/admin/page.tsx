@@ -10,6 +10,7 @@ import TeamLogos from "@/utils/teamlogos";
 import { showToast, ToastType } from "@/utils/toast";
 import { useEffect, useState } from "react";
 import ConfirmationModal from "@/components/ConfirmationModal";
+
 type ActionType = 'cancel' | 'submit' | null;
 
 export default function Admin() {
@@ -21,18 +22,6 @@ export default function Admin() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalText, setModalText] = useState("");
   const [modalAction, setModalAction] = useState<() => void>(() => { });
-
-  const openModal = (actionType: ActionType) => {
-    setModalText(actionType === 'cancel' ? "Are you sure you want to cancel?" : "Are you sure you want to submit?");
-    setModalAction(() => () => {
-      // Implement the action based on actionType
-    });
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
 
   const fetchTeamData = () => {
     fetch("http://localhost:8069/teams/all")
@@ -66,7 +55,7 @@ export default function Admin() {
     setIsModalOpen(true);
   };
 
-  const handleFinishBidding = () => {
+  const handleEndBidding = () => {
     setModalText("Are you sure you want to finish bidding?");
     setModalAction(() => () => {
       // TODO: Implement finish bidding logic
@@ -102,6 +91,26 @@ export default function Admin() {
     setIsModalOpen(true);
   }
 
+  const handleBidIncrement = () => {
+    setModalText("Do you want to increment the bid?");
+    setModalAction(() => () => {
+      fetch("http://localhost:8069/players/increment-bid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((response) => {
+        if (response.ok) {
+          showToast("Bid incremented successfully", ToastType.SUCCESS)
+        } else {
+          showToast("Failed to increment bid", ToastType.ERROR)
+        }
+      }).catch((error) => {
+        showToast("Failed to increment bid: " + error, ToastType.ERROR)
+      });
+    });
+    setIsModalOpen(true);
+  }
 
   useEffect(() => {
     fetchTeamData();
@@ -179,11 +188,20 @@ export default function Admin() {
               <h2 className="text-6xl font-bold mb-8">Current Bid</h2>
               <p className="text-8xl font-bold text-green-600">₹{humanizePrice(gameState!.CurrentBidAmount)}</p>
               <div className="mt-12 space-y-4">
+
                 <button
-                  onClick={handleFinishBidding}
-                  className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg text-xl"
+                  onClick={handleBidIncrement}
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 font-bold py-3 px-6 rounded-lg text-xl"
                 >
-                  Finish Bidding
+                  Increment Player Bid
+                </button>
+
+
+                <button
+                  onClick={handleEndBidding}
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 font-bold py-3 px-6 rounded-lg text-xl"
+                >
+                  End Bidding
                 </button>
               </div>
             </>

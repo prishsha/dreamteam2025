@@ -7,5 +7,7 @@ type GameState struct {
 	IsFinished      bool
 
 	CurrentPlayerInBid *db.Player
+  // NextPlayerInBid
 	CurrentBidAmount   int32
+  // NextBidAmount
 }

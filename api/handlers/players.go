@@ -85,3 +85,41 @@ func AssignTeamToPlayer(queries *db.Queries, gameState *models.GameState) http.H
 		return
 	}
 }
+
+func IncrementBidAmount(clientManager *models.ClientManager, gameState *models.GameState) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var resp map[string]interface{} = make(map[string]interface{})
+
+		if gameState.CurrentPlayerInBid == nil || !gameState.IsBiddingActive || gameState.IsFinished {
+			resp["error"] = "No active bid"
+			log.Error().Msg("No active bid")
+			utils.JSON(w, http.StatusBadRequest, resp)
+			return
+		}
+
+		// NOTE: Subject to change
+
+		if gameState.CurrentBidAmount < 1_00_00_000 {
+			gameState.CurrentBidAmount += 10_00_000
+		} else if gameState.CurrentBidAmount > 1_00_00_000 && gameState.CurrentBidAmount < 5_00_00_000 {
+			gameState.CurrentBidAmount += 20_00_000
+		} else if gameState.CurrentBidAmount > 5_00_00_000 && gameState.CurrentBidAmount < 10_00_00_000 {
+			gameState.CurrentBidAmount += 50_00_000
+		} else {
+			gameState.CurrentBidAmount += 1_00_00_000
+		}
+
+		jsonData, err := json.Marshal(gameState)
+		if err != nil {
+			resp["error"] = err.Error()
+			log.Error().Msg(err.Error())
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
+
+		clientManager.Broadcast <- jsonData
+
+		utils.JSON(w, http.StatusOK, resp)
+		return
+	}
+}

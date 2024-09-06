@@ -62,6 +62,12 @@ func StartBidding(queries *db.Queries, clientManger *models.ClientManager, gameS
       return
     }
 
+    if gameState.IsBiddingActive {
+      resp["error"] = "Bidding is already active"
+      utils.JSON(w, http.StatusBadRequest, resp)
+      return
+    }
+
     gameState.IsBiddingActive = true
 
     // NOTE: idk the order as of now so just fetching the first id.
