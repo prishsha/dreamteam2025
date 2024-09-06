@@ -9,6 +9,8 @@ import { humanizePrice } from "@/utils/humanize";
 import TeamLogos from "@/utils/teamlogos";
 import { showToast, ToastType } from "@/utils/toast";
 import { useEffect, useState } from "react";
+import ConfirmationModal from "@/components/ConfirmationModal";
+type ActionType = 'cancel' | 'submit' | null;
 
 export default function Admin() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -16,6 +18,21 @@ export default function Admin() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [participatingTeams, setParticipatingTeams] = useState<ParticipatingTeam[]>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalText, setModalText] = useState("");
+  const [modalAction, setModalAction] = useState<() => void>(() => { });
+
+  const openModal = (actionType: ActionType) => {
+    setModalText(actionType === 'cancel' ? "Are you sure you want to cancel?" : "Are you sure you want to submit?");
+    setModalAction(() => () => {
+      // Implement the action based on actionType
+    });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const fetchTeamData = () => {
     fetch("http://localhost:8069/teams/all")
@@ -29,54 +46,60 @@ export default function Admin() {
   }
 
   const handleStartBidding = () => {
-
-    // TODO: Add logic to check if the team has enough balance to start the bidding and errors
-
-    fetch("http://localhost:8069/game/start", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((response) => {
-      if (response.ok) {
-        showToast("Bidding started successfully", ToastType.SUCCESS)
-      } else {
-        showToast("Failed to start bidding", ToastType.ERROR)
-      }
-    }).catch((error) => {
-      showToast("Failed to start bidding: " + error, ToastType.ERROR)
+    setModalText("Are you sure you want to start bidding?");
+    setModalAction(() => () => {
+      fetch("http://localhost:8069/game/start", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((response) => {
+        if (response.ok) {
+          showToast("Bidding started successfully", ToastType.SUCCESS)
+        } else {
+          showToast("Failed to start bidding", ToastType.ERROR)
+        }
+      }).catch((error) => {
+        showToast("Failed to start bidding: " + error, ToastType.ERROR)
+      });
     });
+    setIsModalOpen(true);
   };
 
   const handleFinishBidding = () => {
-    // TODO: Implement finish bidding logic
-    showToast("Finish bidding logic not implemented", ToastType.ERROR)
+    setModalText("Are you sure you want to finish bidding?");
+    setModalAction(() => () => {
+      // TODO: Implement finish bidding logic
+      showToast("Finish bidding logic not implemented", ToastType.ERROR)
+    });
+    setIsModalOpen(true);
   };
 
   const assignPlayerToTeam = async (team: ParticipatingTeam) => {
-
-    // TODO: Do a confirmation modal
-
-    fetch("http://localhost:8069/players/assign-team", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        teamId: team.id,
-      }),
-    }).then((response) => {
-      if (response.ok) {
-        fetchTeamData();
-        showToast(`${gameState?.CurrentPlayerInBid?.name} assigned to ${team.name}`, ToastType.SUCCESS)
-      } else {
-        response.json().then((data) => {
-          showToast("Failed to assign player to team: " + data.error, ToastType.ERROR)
-        });
-      }
-    }).catch((error) => {
-      showToast("Failed to assign player to team: " + error, ToastType.ERROR)
+    setModalText(`Are you sure you want to assign ${gameState?.CurrentPlayerInBid?.name} to ${team.name}?`);
+    setModalAction(() => () => {
+      fetch("http://localhost:8069/players/assign-team", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamId: team.id,
+        }),
+      }).then((response) => {
+        if (response.ok) {
+          fetchTeamData();
+          showToast(`${gameState?.CurrentPlayerInBid?.name} assigned to ${team.name}`, ToastType.SUCCESS)
+        } else {
+          response.json().then((data) => {
+            showToast("Failed to assign player to team: " + data.error, ToastType.ERROR)
+          });
+        }
+      }).catch((error) => {
+        showToast("Failed to assign player to team: " + error, ToastType.ERROR)
+      });
     });
+    setIsModalOpen(true);
   }
 
 
@@ -196,6 +219,15 @@ export default function Admin() {
           </div>
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => {
+          modalAction();
+          setIsModalOpen(false);
+        }}
+        text={modalText}
+      />
     </div>
   );
 }
