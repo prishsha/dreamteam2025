@@ -2,27 +2,40 @@
 
 import { Player } from "@/types/player";
 import { useEffect, useState } from "react";
-
+import PlayerCard from "@/components/PlayerCard";
+import Spinner from "@/components/Spinner/Spinner";
 export default function PlayersPage() {
 
   const [players, setPlayers] = useState<Player[]>([]);
-
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
+    setIsLoading(true);
     fetch("http://localhost:8069/players/all")
       .then((res) => res.json())
-      .then((data) => {setPlayers(data)});
+      .then((data) => {
+        setPlayers(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching players:", error);
+        setIsLoading(false);
+      });
   }, []);
 
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {players?.map((player) => (
-          <div key={player.id} className="bg-white shadow-md rounded-lg p-4">
-            <h2 className="text-xl text-black font-semibold">{player.name}</h2>
-          </div>
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-screen">
+          <Spinner />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {players?.map((player) => (
+            <PlayerCard key={player.id} {...player} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

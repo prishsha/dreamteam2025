@@ -14,6 +14,6 @@ export interface Player {
   basePrice: number;
   avatarUrl: {
     String: string;
-    Value: string;
+    Valid: boolean;
   }
 }

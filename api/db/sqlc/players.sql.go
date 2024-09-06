@@ -11,6 +11,7 @@ import (
 
 const getAllPlayers = `-- name: GetAllPlayers :many
 SELECT id, name, country, role, rating, base_price, avatar_url FROM players
+ORDER BY id
 LIMIT $1 OFFSET $2
 `
 

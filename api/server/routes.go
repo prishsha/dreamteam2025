@@ -20,6 +20,12 @@ func (s *Server) HandleRoutes(mainRouter *chi.Mux) {
 	playersRouter := chi.NewRouter()
 	playersRouter.Get("/all", handlers.GetAllPlayers(s.Queries))
 
+	fileRouter := chi.NewRouter()
+	handlers.FileServer(fileRouter, "/", http.Dir("./assets/"))
+
+  mainRouter.Mount("/game/ws", handlers.GameStateSocket(s.ClientManager, s.GameState))
+
 	mainRouter.Mount("/admin", adminRouter)
 	mainRouter.Mount("/players", playersRouter)
+	mainRouter.Mount("/assets", fileRouter)
 }

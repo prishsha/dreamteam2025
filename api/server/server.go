@@ -2,6 +2,7 @@ package server
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -23,10 +24,12 @@ import (
 )
 
 type Server struct {
-	Router  *chi.Mux
-	Queries *db.Queries
-	DB      *sql.DB
-	Logger  zerolog.Logger
+	Router        *chi.Mux
+	Queries       *db.Queries
+	DB            *sql.DB
+	GameState     *models.GameState
+	ClientManager *models.ClientManager
+	Logger        zerolog.Logger
 }
 
 func New() *Server {
@@ -44,6 +47,7 @@ func New() *Server {
 	}
 
 	s.PrepareRouter()
+	s.InitalizeGameState()
 
 	return s
 }
@@ -70,7 +74,7 @@ func (s *Server) PrepareDB() error {
 	}
 
 	for tries > 0 {
-		log.Info().Msg("Attempting to make a connection to the garrix database...")
+		log.Info().Msg("Attempting to make a connection to the dreamteam database...")
 		err = DB.Ping()
 		if err != nil {
 			tries -= 1
@@ -80,7 +84,7 @@ func (s *Server) PrepareDB() error {
 		}
 		s.Queries = db.New(DB)
 		s.DB = DB
-		log.Info().Msg("Connection to the garrix database established.")
+		log.Info().Msg("Connection to the dreamteam database established.")
 		return nil
 	}
 	return errors.New("Could not make a connection to the database.")
@@ -102,6 +106,50 @@ func (s *Server) PrepareRouter() {
 	}))
 	//Store Router in Struct
 	s.Router = r
+}
+
+func (s *Server) InitalizeGameState() {
+
+	s.GameState = &models.GameState{
+		IsBiddingActive: true,
+		IsFinished:      false,
+		CurrentPlayerInBid: &db.Player{
+			ID:        69,
+			Name:      "Milind Madhukar",
+			Country:   "India",
+			Role:      "TechNerd",
+			Rating:    99,
+			BasePrice: 1000000000,
+			AvatarUrl: sql.NullString{
+				String: "http://localhost:8069/assets/dreamteam.png",
+				Valid:  false,
+			},
+		},
+		CurrentBidAmount: 1000,
+	}
+
+	s.ClientManager = &models.ClientManager{
+		Clients:    make(map[*models.Client]bool),
+		Broadcast:  make(chan []byte),
+		Register:   make(chan *models.Client),
+		Unregister: make(chan *models.Client),
+	}
+
+	go s.ClientManager.Run()
+
+	// NOTE: Technically redundant, as we will only send updates via the broadcaster in the client manager.
+	go func() {
+		for {
+			time.Sleep(3 * time.Second)
+			jsonData, err := json.Marshal(s.GameState)
+			if err != nil {
+				log.Error().Err(err).Msg("Failed to marshal game state")
+			}
+			s.ClientManager.Broadcast <- jsonData
+		}
+	}()
+
+	log.Info().Msg("Game State Initialized")
 }
 
 func (s *Server) RunServer() (err error) {
