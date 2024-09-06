@@ -8,6 +8,12 @@ import (
 	"database/sql"
 )
 
+type ParticipantTeam struct {
+	ID      int32  `json:"id"`
+	Name    string `json:"name"`
+	Balance int32  `json:"balance"`
+}
+
 type Player struct {
 	ID        int32          `json:"id"`
 	Name      string         `json:"name"`
@@ -16,4 +22,5 @@ type Player struct {
 	Rating    int32          `json:"rating"`
 	BasePrice int32          `json:"basePrice"`
 	AvatarUrl sql.NullString `json:"avatarUrl"`
+	TeamID    sql.NullInt32  `json:"teamId"`
 }

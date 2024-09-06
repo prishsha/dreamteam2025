@@ -17,15 +17,16 @@ func (s *Server) HandleRoutes(mainRouter *chi.Mux) {
 	// TODO: Maybe could add a middleware to check if admin or not
 	adminRouter := chi.NewRouter()
 
-	playersRouter := chi.NewRouter()
-	playersRouter.Get("/all", handlers.GetAllPlayers(s.Queries))
+	mainRouter.Get("/players/all", handlers.GetAllPlayers(s.Queries))
+  mainRouter.Get("/teams/all", handlers.GetAllTeams(s.Queries))
+
+  mainRouter.Get("/game/ws", handlers.GameStateSocket(s.ClientManager, s.GameState))
+  mainRouter.Post("/game/start", handlers.StartBidding(s.Queries, s.ClientManager, s.GameState))
+
 
 	fileRouter := chi.NewRouter()
 	handlers.FileServer(fileRouter, "/", http.Dir("./assets/"))
 
-  mainRouter.Mount("/game/ws", handlers.GameStateSocket(s.ClientManager, s.GameState))
-
 	mainRouter.Mount("/admin", adminRouter)
-	mainRouter.Mount("/players", playersRouter)
 	mainRouter.Mount("/assets", fileRouter)
 }

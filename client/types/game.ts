@@ -4,6 +4,6 @@ export interface GameState {
   IsBiddingActive: boolean
   IsFinished: boolean
 
-  CurrentPlayerInBid: Player
+  CurrentPlayerInBid?: Player
   CurrentBidAmount: number
 }

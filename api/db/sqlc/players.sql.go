@@ -10,7 +10,7 @@ import (
 )
 
 const getAllPlayers = `-- name: GetAllPlayers :many
-SELECT id, name, country, role, rating, base_price, avatar_url FROM players
+SELECT id, name, country, role, rating, base_price, avatar_url, team_id FROM players
 ORDER BY id
 LIMIT $1 OFFSET $2
 `
@@ -37,6 +37,7 @@ func (q *Queries) GetAllPlayers(ctx context.Context, arg GetAllPlayersParams) ([
 			&i.Rating,
 			&i.BasePrice,
 			&i.AvatarUrl,
+			&i.TeamID,
 		); err != nil {
 			return nil, err
 		}
@@ -52,7 +53,7 @@ func (q *Queries) GetAllPlayers(ctx context.Context, arg GetAllPlayersParams) ([
 }
 
 const getPlayer = `-- name: GetPlayer :one
-SELECT id, name, country, role, rating, base_price, avatar_url FROM players 
+SELECT id, name, country, role, rating, base_price, avatar_url, team_id FROM players 
 WHERE id = $1
 LIMIT 1
 `
@@ -68,6 +69,7 @@ func (q *Queries) GetPlayer(ctx context.Context, id int32) (Player, error) {
 		&i.Rating,
 		&i.BasePrice,
 		&i.AvatarUrl,
+		&i.TeamID,
 	)
 	return i, err
 }

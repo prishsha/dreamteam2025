@@ -37,13 +37,19 @@ func (manager *ClientManager) Run() {
 			}
 		case message := <-manager.Broadcast:
 			manager.Mutex.Lock()
-			for client := range manager.Clients {
-				err := client.Conn.WriteMessage(websocket.TextMessage, message)
-				if err != nil {
-					client.Conn.Close()
-					delete(manager.Clients, client)
+			var wg sync.WaitGroup
+			wg.Add(len(manager.Clients))
+			go func() {
+				for client := range manager.Clients {
+					err := client.Conn.WriteMessage(websocket.TextMessage, message)
+					if err != nil {
+						client.Conn.Close()
+						delete(manager.Clients, client)
+					}
+					wg.Done()
 				}
-			}
+			}()
+			wg.Wait()
 			manager.Mutex.Unlock()
 			log.Info().Msgf("Broadcasted message to %d clients", len(manager.Clients))
 		}

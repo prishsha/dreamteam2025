@@ -2,7 +2,6 @@ package server
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -111,21 +110,10 @@ func (s *Server) PrepareRouter() {
 func (s *Server) InitalizeGameState() {
 
 	s.GameState = &models.GameState{
-		IsBiddingActive: true,
-		IsFinished:      false,
-		CurrentPlayerInBid: &db.Player{
-			ID:        69,
-			Name:      "Milind Madhukar",
-			Country:   "India",
-			Role:      "TechNerd",
-			Rating:    99,
-			BasePrice: 1000000000,
-			AvatarUrl: sql.NullString{
-				String: "http://localhost:8069/assets/dreamteam.png",
-				Valid:  false,
-			},
-		},
-		CurrentBidAmount: 1000,
+		IsBiddingActive:    false,
+		IsFinished:         false,
+		CurrentPlayerInBid: nil,
+		CurrentBidAmount:   0,
 	}
 
 	s.ClientManager = &models.ClientManager{
@@ -136,18 +124,6 @@ func (s *Server) InitalizeGameState() {
 	}
 
 	go s.ClientManager.Run()
-
-	// NOTE: Technically redundant, as we will only send updates via the broadcaster in the client manager.
-	go func() {
-		for {
-			time.Sleep(3 * time.Second)
-			jsonData, err := json.Marshal(s.GameState)
-			if err != nil {
-				log.Error().Err(err).Msg("Failed to marshal game state")
-			}
-			s.ClientManager.Broadcast <- jsonData
-		}
-	}()
 
 	log.Info().Msg("Game State Initialized")
 }

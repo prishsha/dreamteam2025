@@ -7,5 +7,5 @@ type GameState struct {
 	IsFinished      bool
 
 	CurrentPlayerInBid *db.Player
-	CurrentBidAmount   int
+	CurrentBidAmount   int32
 }
