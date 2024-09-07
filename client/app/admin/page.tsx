@@ -173,7 +173,7 @@ export default function Admin() {
           <div className="w-1/2 h-full relative">
             {gameState?.CurrentPlayerInBid?.avatarUrl.Valid && (
               <img
-                src={gameState.CurrentPlayerInBid.avatarUrl.String}
+                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
                 alt={gameState.CurrentPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover"
               />

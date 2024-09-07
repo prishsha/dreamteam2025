@@ -21,7 +21,7 @@ const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePri
       </div>
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-0"></div>
-        <Image src={avatarUrl.String} alt={name} width={300} height={300} className="mx-auto rounded-full object-contain" />
+        <Image src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${avatarUrl.String}`} alt={name} width={300} height={300} className="mx-auto rounded-full object-contain" />
       </div>
       <div className="mt-4 text-center relative z-10">
         <h2 className="text-3xl font-bold text-white">{name}</h2>
