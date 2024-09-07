@@ -39,7 +39,7 @@ type assignTeamToPlayerRequest struct {
 	TeamId int `json:"teamId"`
 }
 
-func AssignTeamToPlayer(queries *db.Queries, gameState *models.GameState) http.HandlerFunc {
+func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager, gameState *models.GameState) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var resp map[string]interface{} = make(map[string]interface{})
 
@@ -81,6 +81,30 @@ func AssignTeamToPlayer(queries *db.Queries, gameState *models.GameState) http.H
 			return
 		}
 
+		gameState.CurrentPlayerInBid = gameState.NextPlayerInBid
+		gameState.CurrentBidAmount = gameState.CurrentPlayerInBid.BasePrice
+		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.CurrentBidAmount)
+
+		nextPlayer, err := queries.GetPlayer(r.Context(), gameState.CurrentPlayerInBid.ID+1)
+    if err != nil {
+      resp["error"] = err.Error()
+      log.Error().Msg(err.Error())
+      utils.JSON(w, http.StatusInternalServerError, resp)
+      return
+    }
+
+		gameState.NextPlayerInBid = &nextPlayer
+
+		jsonData, err := json.Marshal(gameState)
+		if err != nil {
+			resp["error"] = err.Error()
+			log.Error().Msg(err.Error())
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
+
+		clientManager.Broadcast <- jsonData
+
 		utils.JSON(w, http.StatusOK, resp)
 		return
 	}
@@ -97,17 +121,8 @@ func IncrementBidAmount(clientManager *models.ClientManager, gameState *models.G
 			return
 		}
 
-		// NOTE: Subject to change
-
-		if gameState.CurrentBidAmount < 1_00_00_000 {
-			gameState.CurrentBidAmount += 10_00_000
-		} else if gameState.CurrentBidAmount > 1_00_00_000 && gameState.CurrentBidAmount < 5_00_00_000 {
-			gameState.CurrentBidAmount += 20_00_000
-		} else if gameState.CurrentBidAmount > 5_00_00_000 && gameState.CurrentBidAmount < 10_00_00_000 {
-			gameState.CurrentBidAmount += 50_00_000
-		} else {
-			gameState.CurrentBidAmount += 1_00_00_000
-		}
+		gameState.CurrentBidAmount = gameState.NextBidAmount
+		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.CurrentBidAmount)
 
 		jsonData, err := json.Marshal(gameState)
 		if err != nil {

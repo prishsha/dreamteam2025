@@ -56,37 +56,61 @@ func StartBidding(queries *db.Queries, clientManger *models.ClientManager, gameS
 	return func(w http.ResponseWriter, r *http.Request) {
 		var resp map[string]interface{} = make(map[string]interface{})
 
-    if gameState.IsFinished {
-      resp["error"] = "Game is already finished"
-      utils.JSON(w, http.StatusBadRequest, resp)
-      return
-    }
+		if gameState.IsFinished {
+			resp["error"] = "Game is already finished"
+			utils.JSON(w, http.StatusBadRequest, resp)
+			return
+		}
 
-    if gameState.IsBiddingActive {
-      resp["error"] = "Bidding is already active"
-      utils.JSON(w, http.StatusBadRequest, resp)
-      return
-    }
+		if gameState.IsBiddingActive {
+			resp["error"] = "Bidding is already active"
+			utils.JSON(w, http.StatusBadRequest, resp)
+			return
+		}
 
-    gameState.IsBiddingActive = true
+		gameState.IsBiddingActive = true
 
-    // NOTE: idk the order as of now so just fetching the first id.
+		// NOTE: idk the order as of now so just fetching the first id.
 
-    firstPlayer, err := queries.GetPlayer(r.Context(), 11)
-    if err != nil {
-      resp["error"] = err.Error()
-      log.Error().Msg(err.Error())
-      utils.JSON(w, http.StatusInternalServerError, resp)
-      return
-    }
+		firstPlayer, err := queries.GetPlayer(r.Context(), 1)
+		if err != nil {
+			resp["error"] = err.Error()
+			log.Error().Msg(err.Error())
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
 
-    gameState.CurrentPlayerInBid = &firstPlayer
+		if err != nil {
+			resp["error"] = err.Error()
+			log.Error().Msg(err.Error())
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
 
-    gameState.CurrentBidAmount = firstPlayer.BasePrice
+		nextPlayer, err := queries.GetPlayer(r.Context(), firstPlayer.ID+1)
+		if err != nil {
+			resp["error"] = err.Error()
+			log.Error().Msg(err.Error())
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
 
-    jsonData, err := json.Marshal(gameState)
-    clientManger.Broadcast <- jsonData
+		if err != nil {
+			resp["error"] = err.Error()
+			log.Error().Msg(err.Error())
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
 
-    utils.JSON(w, http.StatusOK, gameState)
-  }
+		gameState.CurrentPlayerInBid = &firstPlayer
+		gameState.NextPlayerInBid = &nextPlayer
+
+		gameState.CurrentBidAmount = firstPlayer.BasePrice
+		gameState.NextBidAmount = utils.CalculateNextBidAmount(firstPlayer.BasePrice)
+
+		jsonData, err := json.Marshal(gameState)
+		clientManger.Broadcast <- jsonData
+
+		utils.JSON(w, http.StatusOK, gameState)
+	}
 }

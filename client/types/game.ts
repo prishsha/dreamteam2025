@@ -5,5 +5,8 @@ export interface GameState {
   IsFinished: boolean
 
   CurrentPlayerInBid?: Player
+  NextPlayerInBid?: Player
+
   CurrentBidAmount: number
+  NextBidAmount: number
 }

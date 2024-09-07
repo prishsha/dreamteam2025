@@ -3,11 +3,11 @@ package models
 import db "github.com/milindmadhukar/dreamteam/db/sqlc"
 
 type GameState struct {
-	IsBiddingActive bool
+	IsBiddingActive bool 
 	IsFinished      bool
 
 	CurrentPlayerInBid *db.Player
-  // NextPlayerInBid
+	NextPlayerInBid    *db.Player
 	CurrentBidAmount   int32
-  // NextBidAmount
+	NextBidAmount      int32
 }
