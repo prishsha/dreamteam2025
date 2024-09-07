@@ -37,6 +37,11 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'dreamteam.milind.lol',
+        pathname: '/assets/**',
+      },
+      {
+        protocol: 'https',
         hostname: 's.ndtvimg.com',
         pathname: '**',
       }
