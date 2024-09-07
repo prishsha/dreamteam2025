@@ -15,7 +15,6 @@ export default function Admin() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [gameStarted, setGameStarted] = useState(false);
   const [participatingTeams, setParticipatingTeams] = useState<ParticipatingTeam[]>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalText, setModalText] = useState("");
@@ -129,7 +128,6 @@ export default function Admin() {
 
     ws.onmessage = (event) => {
       try {
-
         const serverMessage = JSON.parse(event.data);
 
         if (serverMessage.gameState) {
@@ -208,7 +206,7 @@ export default function Admin() {
         </div>
         <div className="w-1/2 flex flex-col justify-between p-8 h-screen overflow-y-auto">
           <div>
-            {gameStarted ? (
+            {gameState?.IsBiddingActive ? (
               <>
                 <h2 className="text-4xl font-bold mb-4">Current Bid</h2>
                 <div className="flex flex-col items-start justify-center mb-4">
