@@ -117,8 +117,9 @@ export default function Admin() {
   useEffect(() => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const wsUrl = backendUrl!.replace(/^https?:\/\//, '');
+    const wsProtocol = backendUrl!.startsWith("https") ? "wss" : "ws";
 
-    const ws = new WebSocket(`wss://${wsUrl}/game/ws`);
+    const ws = new WebSocket(`${wsProtocol}://${wsUrl}/game/ws`);
 
     ws.onopen = () => {
       setConnected(true);
@@ -173,7 +174,7 @@ export default function Admin() {
           <div className="w-1/2 h-full relative">
             {gameState?.CurrentPlayerInBid?.avatarUrl.Valid && (
               <img
-                src={`/myimages/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
+                src={`/cdn/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
                 alt={gameState.CurrentPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover"
               />
@@ -189,7 +190,7 @@ export default function Admin() {
           <div className="w-1/2 h-full relative">
             {gameState?.NextPlayerInBid?.avatarUrl.Valid && (
               <img
-                src={`/myimages/${gameState.NextPlayerInBid.avatarUrl.String}`}
+                src={`/cdn/${gameState.NextPlayerInBid.avatarUrl.String}`}
                 alt={gameState.NextPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover opacity-70"
               />

@@ -11,12 +11,11 @@ export default function AuctionPage() {
   const [gameState, setGameState] = useState<GameState | null>(null);
 
   useEffect(() => {
-
-
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const wsUrl = backendUrl!.replace(/^https?:\/\//, '');
+    const wsProtocol = backendUrl!.startsWith("https") ? "wss" : "ws";
 
-    const ws = new WebSocket(`wss://${wsUrl}/game/ws`);
+    const ws = new WebSocket(`${wsProtocol}://${wsUrl}/game/ws`);
 
     ws.onopen = () => {
       setConnected(true);
@@ -51,13 +50,13 @@ export default function AuctionPage() {
       <div className="absolute top-4 right-4">
         <ConnectionStatus connected={connected} />
       </div>
-      
+
       {gameState?.IsBiddingActive && gameState.CurrentPlayerInBid ? (
         <div className="text-center">
           <h1 className="text-5xl font-bold mb-8">Current Player</h1>
           {gameState.CurrentPlayerInBid.avatarUrl.Valid && (
             <img
-              src={`myimages/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
+              src={`/cdn/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
               alt={gameState.CurrentPlayerInBid.name}
               className="w-64 h-64 rounded-full object-cover mx-auto mb-6"
             />
@@ -66,7 +65,7 @@ export default function AuctionPage() {
           <p className="text-2xl mb-2">{gameState.CurrentPlayerInBid.country}</p>
           <p className="text-2xl mb-2">Role: {gameState.CurrentPlayerInBid.role}</p>
           <p className="text-2xl mb-8">Rating: {gameState.CurrentPlayerInBid.rating}</p>
-          
+
           <div className="text-center">
             <p className="text-6xl font-bold mb-4">Current Bid: <span className="text-green-400">₹{humanizePrice(gameState.CurrentBidAmount)}</span></p>
             <p className="text-4xl">Next Bid: <span className="text-yellow-400">₹{humanizePrice(gameState.NextBidAmount)}</span></p>
