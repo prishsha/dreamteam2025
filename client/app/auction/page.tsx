@@ -25,8 +25,14 @@ export default function AuctionPage() {
 
     ws.onmessage = (event) => {
       try {
-        const gameState: GameState = JSON.parse(event.data);
-        setGameState(gameState);
+        const serverMessage = JSON.parse(event.data);
+
+        if (serverMessage.gameState) {
+          setGameState(serverMessage.gameState);
+        } else if (serverMessage.message) {
+          // TODO: Implement the message recieving logic
+          console.log("Message received: ", serverMessage.message);
+        }
       } catch (error) {
         console.error('Failed to parse message:', error);
       }

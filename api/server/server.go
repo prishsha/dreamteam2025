@@ -121,7 +121,7 @@ func (s *Server) InitalizeGameState() {
 
 	s.ClientManager = &models.ClientManager{
 		Clients:    make(map[*models.Client]bool),
-		Broadcast:  make(chan []byte),
+		Broadcast:  make(chan *models.ServerMessage),
 		Register:   make(chan *models.Client),
 		Unregister: make(chan *models.Client),
 	}

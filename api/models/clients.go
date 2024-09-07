@@ -1,11 +1,17 @@
 package models
 
 import (
+	"encoding/json"
 	"sync"
 
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog/log"
 )
+
+type ServerMessage struct {
+	Message   string     `json:"message,omitempty"`
+	GameState *GameState `json:"gameState,omitempty"`
+}
 
 type Client struct {
 	Conn *websocket.Conn
@@ -13,7 +19,7 @@ type Client struct {
 
 type ClientManager struct {
 	Clients    map[*Client]bool
-	Broadcast  chan []byte
+	Broadcast  chan *ServerMessage
 	Register   chan *Client
 	Unregister chan *Client
 	Mutex      sync.Mutex
@@ -41,7 +47,13 @@ func (manager *ClientManager) Run() {
 			wg.Add(len(manager.Clients))
 			go func() {
 				for client := range manager.Clients {
-					err := client.Conn.WriteMessage(websocket.TextMessage, message)
+					jsonData, err := json.Marshal(message)
+					if err != nil {
+						log.Error().Err(err).Msg("Failed to marshal game state")
+						return
+					}
+
+					err = client.Conn.WriteMessage(websocket.TextMessage, jsonData)
 					if err != nil {
 						client.Conn.Close()
 						delete(manager.Clients, client)

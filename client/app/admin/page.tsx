@@ -10,7 +10,6 @@ import TeamLogos from "@/utils/teamlogos";
 import { showToast, ToastType } from "@/utils/toast";
 import { useEffect, useState } from "react";
 import ConfirmationModal from "@/components/ConfirmationModal";
-import PlayerCard from "@/components/PlayerCard";
 
 export default function Admin() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -129,13 +128,15 @@ export default function Admin() {
     };
 
     ws.onmessage = (event) => {
-      console.log('Message received:', event.data);
       try {
-        const gameState: GameState = JSON.parse(event.data);
-        setGameState(gameState);
-        setGameStarted(gameState.IsBiddingActive);
-        if (gameState.IsFinished) {
-          console.log("game is finished")
+
+        const serverMessage = JSON.parse(event.data);
+
+        if (serverMessage.gameState) {
+          setGameState(serverMessage.gameState);
+        } else if (serverMessage.message) {
+          // TODO: Implement the message recieving logic
+          console.log("Message received: ", serverMessage.message);
         }
       } catch (error) {
         console.error('Failed to parse message:', error);
@@ -173,18 +174,36 @@ export default function Admin() {
       <div className="flex-1 flex">
         <div className="w-1/2 h-screen flex">
           <div className="w-1/2 h-full relative">
-            {gameState?.CurrentPlayerInBid && (
-              <PlayerCard
-                {...gameState.CurrentPlayerInBid}
+            {gameState?.CurrentPlayerInBid?.avatarUrl.Valid && (
+              <img
+                src={`/cdn/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
+                alt={gameState.CurrentPlayerInBid.name}
+                className="absolute inset-0 w-full h-full object-cover"
               />
             )}
+            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
+              <h2 className="text-2xl font-bold">Current Player</h2>
+              <h3 className="text-xl font-semibold">{gameState?.CurrentPlayerInBid?.name}</h3>
+              <p className="text-lg">{gameState?.CurrentPlayerInBid?.country}</p>
+              <p className="text-lg">Role: {gameState?.CurrentPlayerInBid?.role}</p>
+              <p className="text-lg">Rating: {gameState?.CurrentPlayerInBid?.rating}</p>
+            </div>
           </div>
           <div className="w-1/2 h-full relative">
-            {gameState?.NextPlayerInBid && (
-              <PlayerCard
-                {...gameState.NextPlayerInBid}
+            {gameState?.NextPlayerInBid?.avatarUrl.Valid && (
+              <img
+                src={`/cdn/${gameState.NextPlayerInBid.avatarUrl.String}`}
+                alt={gameState.NextPlayerInBid.name}
+                className="absolute inset-0 w-full h-full object-cover opacity-70"
               />
             )}
+            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
+              <h2 className="text-2xl font-bold">Next Player</h2>
+              <h3 className="text-xl font-semibold">{gameState?.NextPlayerInBid?.name}</h3>
+              <p className="text-lg">{gameState?.NextPlayerInBid?.country}</p>
+              <p className="text-lg">Role: {gameState?.NextPlayerInBid?.role}</p>
+              <p className="text-lg">Rating: {gameState?.NextPlayerInBid?.rating}</p>
+            </div>
           </div>
         </div>
         <div className="w-1/2 flex flex-col justify-between p-8 h-screen overflow-y-auto">

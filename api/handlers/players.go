@@ -95,15 +95,9 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 
 		gameState.NextPlayerInBid = &nextPlayer
 
-		jsonData, err := json.Marshal(gameState)
-		if err != nil {
-			resp["error"] = err.Error()
-			log.Error().Msg(err.Error())
-			utils.JSON(w, http.StatusInternalServerError, resp)
-			return
-		}
-
-		clientManager.Broadcast <- jsonData
+		clientManager.Broadcast <- &models.ServerMessage{
+      GameState: gameState,
+    }
 
 		utils.JSON(w, http.StatusOK, resp)
 		return
@@ -124,15 +118,11 @@ func IncrementBidAmount(clientManager *models.ClientManager, gameState *models.G
 		gameState.CurrentBidAmount = gameState.NextBidAmount
 		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.CurrentBidAmount)
 
-		jsonData, err := json.Marshal(gameState)
-		if err != nil {
-			resp["error"] = err.Error()
-			log.Error().Msg(err.Error())
-			utils.JSON(w, http.StatusInternalServerError, resp)
-			return
-		}
 
-		clientManager.Broadcast <- jsonData
+
+		clientManager.Broadcast <- &models.ServerMessage{
+      GameState: gameState,
+    }
 
 		utils.JSON(w, http.StatusOK, resp)
 		return

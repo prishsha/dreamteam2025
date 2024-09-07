@@ -33,13 +33,22 @@ func GameStateSocket(clientManger *models.ClientManager, gameState *models.GameS
 			conn.Close()
 		}()
 
-		jsonData, err := json.Marshal(gameState)
+		serverMessage := models.ServerMessage{
+			GameState: gameState,
+			Message:   "Welcome to the game",
+		}
+
+		jsonData, err := json.Marshal(serverMessage)
 		if err != nil {
-			log.Error().Err(err).Msg("Failed to marshal game state")
+			log.Error().Err(err).Msg("Failed to marshal message")
 			return
 		}
 
-		conn.WriteMessage(websocket.TextMessage, jsonData)
+		err = conn.WriteMessage(websocket.TextMessage, jsonData)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to write message")
+			return
+		}
 
 		for {
 			_, _, err := conn.ReadMessage()
@@ -71,15 +80,7 @@ func StartBidding(queries *db.Queries, clientManger *models.ClientManager, gameS
 		gameState.IsBiddingActive = true
 
 		// NOTE: idk the order as of now so just fetching the first id.
-
 		firstPlayer, err := queries.GetPlayer(r.Context(), 1)
-		if err != nil {
-			resp["error"] = err.Error()
-			log.Error().Msg(err.Error())
-			utils.JSON(w, http.StatusInternalServerError, resp)
-			return
-		}
-
 		if err != nil {
 			resp["error"] = err.Error()
 			log.Error().Msg(err.Error())
@@ -95,21 +96,15 @@ func StartBidding(queries *db.Queries, clientManger *models.ClientManager, gameS
 			return
 		}
 
-		if err != nil {
-			resp["error"] = err.Error()
-			log.Error().Msg(err.Error())
-			utils.JSON(w, http.StatusInternalServerError, resp)
-			return
-		}
-
 		gameState.CurrentPlayerInBid = &firstPlayer
 		gameState.NextPlayerInBid = &nextPlayer
 
 		gameState.CurrentBidAmount = firstPlayer.BasePrice
 		gameState.NextBidAmount = utils.CalculateNextBidAmount(firstPlayer.BasePrice)
 
-		jsonData, err := json.Marshal(gameState)
-		clientManger.Broadcast <- jsonData
+		clientManger.Broadcast <- &models.ServerMessage{
+			GameState: gameState,
+		}
 
 		utils.JSON(w, http.StatusOK, gameState)
 	}
