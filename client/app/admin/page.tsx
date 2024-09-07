@@ -173,7 +173,7 @@ export default function Admin() {
           <div className="w-1/2 h-full relative">
             {gameState?.CurrentPlayerInBid?.avatarUrl.Valid && (
               <img
-                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
+                src={`/myimages/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
                 alt={gameState.CurrentPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover"
               />
@@ -189,7 +189,7 @@ export default function Admin() {
           <div className="w-1/2 h-full relative">
             {gameState?.NextPlayerInBid?.avatarUrl.Valid && (
               <img
-                src={gameState.NextPlayerInBid.avatarUrl.String}
+                src={`/myimages/${gameState.NextPlayerInBid.avatarUrl.String}`}
                 alt={gameState.NextPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover opacity-70"
               />

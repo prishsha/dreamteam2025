@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/myimages/:slug*',
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/:slug*`,
+        permanent: true,
+      }
+    ]
+  },
 
   async headers() {
     return [
@@ -8,7 +18,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: 'https://dreamteam.milind.lol',
+            value: process.env.NEXT_PUBLIC_BACKEND_URL,
           },
           {
             key: 'Access-Control-Allow-Methods',
@@ -36,8 +46,8 @@ const nextConfig = {
         pathname: '/assets/**',
       },
       {
-        protocol: 'https',
-        hostname: 'dreamteam.milind.lol',
+        protocol: new URL(process.env.NEXT_PUBLIC_BACKEND_URL).protocol.slice(0, -1),
+        hostname: new URL(process.env.NEXT_PUBLIC_BACKEND_URL).hostname,
         pathname: '/assets/**',
       },
       {
