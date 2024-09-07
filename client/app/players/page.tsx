@@ -10,7 +10,8 @@ export default function PlayersPage() {
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     setIsLoading(true);
-    fetch("http://localhost:8069/players/all")
+
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/players/all`)
       .then((res) => res.json())
       .then((data) => {
         setPlayers(data);

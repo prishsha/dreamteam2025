@@ -22,7 +22,7 @@ export default function Admin() {
   const [modalAction, setModalAction] = useState<() => void>(() => { });
 
   const fetchTeamData = () => {
-    fetch("http://localhost:8069/teams/all")
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/teams/all`)
       .then((response) => response.json())
       .then((data) => {
         setParticipatingTeams(data);
@@ -35,7 +35,7 @@ export default function Admin() {
   const handleStartBidding = () => {
     setModalText("Are you sure you want to start bidding?");
     setModalAction(() => () => {
-      fetch("http://localhost:8069/game/start", {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/game/start`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export default function Admin() {
   const assignPlayerToTeam = async (team: ParticipatingTeam) => {
     setModalText(`Are you sure you want to assign ${gameState?.CurrentPlayerInBid?.name} to ${team.name} for ${humanizePrice(gameState!.CurrentBidAmount)} ?`);
     setModalAction(() => () => {
-      fetch("http://localhost:8069/players/assign-team", {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/players/assign-team`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +92,7 @@ export default function Admin() {
   const handleBidIncrement = () => {
     setModalText("Do you want to increment the bid?");
     setModalAction(() => () => {
-      fetch("http://localhost:8069/players/increment-bid", {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/players/increment-bid`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,7 +115,10 @@ export default function Admin() {
   }, []);
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8069/game/ws');
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const wsUrl = backendUrl!.replace(/^https?:\/\//, '');
+
+    const ws = new WebSocket(`ws://${wsUrl}/game/ws`);
 
     ws.onopen = () => {
       setConnected(true);

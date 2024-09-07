@@ -11,7 +11,12 @@ export default function AuctionPage() {
   const [gameState, setGameState] = useState<GameState | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8069/game/ws');
+
+
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const wsUrl = backendUrl!.replace(/^https?:\/\//, '');
+
+    const ws = new WebSocket(`ws://${wsUrl}/game/ws`);
 
     ws.onopen = () => {
       setConnected(true);
