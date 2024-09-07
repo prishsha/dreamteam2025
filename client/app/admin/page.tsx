@@ -27,7 +27,7 @@ export default function Admin() {
       .then((data) => {
         setParticipatingTeams(data);
       })
-      .catch((error) => {
+      .catch(() => {
         showToast("Failed to fetch updated team data", ToastType.ERROR)
       });
   }
@@ -123,6 +123,7 @@ export default function Admin() {
     ws.onopen = () => {
       setConnected(true);
       console.log('Connected to WebSocket');
+      console.log(socket?.readyState)
     };
 
     ws.onmessage = (event) => {

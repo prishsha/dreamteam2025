@@ -40,3 +40,4 @@ client/.vercel
 client/*.tsbuildinfo
 client/next-env.d.ts
 
+client/.env
