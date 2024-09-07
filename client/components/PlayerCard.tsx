@@ -22,11 +22,13 @@ const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePri
       <div className="relative h-80">
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-0"></div>
         <Image
-          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${avatarUrl.String}`}
+          src={`/cdn/${avatarUrl.String}`}
           alt={name}
           layout="fill"
           objectFit="cover"
           className="rounded-t-lg"
+          // TODO: Only coz /cdn/ is a redirect
+          unoptimized
         />
       </div>
       <div className="mt-4 text-center relative z-10">
