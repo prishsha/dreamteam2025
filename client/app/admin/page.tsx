@@ -118,7 +118,7 @@ export default function Admin() {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const wsUrl = backendUrl!.replace(/^https?:\/\//, '');
 
-    const ws = new WebSocket(`ws://${wsUrl}/game/ws`);
+    const ws = new WebSocket(`wss://${wsUrl}/game/ws`);
 
     ws.onopen = () => {
       setConnected(true);
