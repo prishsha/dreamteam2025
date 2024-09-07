@@ -20,6 +20,7 @@ export default function AuctionPage() {
 
     ws.onopen = () => {
       setConnected(true);
+      console.log(socket?.readyState)
       console.log('Connected to WebSocket');
     };
 
