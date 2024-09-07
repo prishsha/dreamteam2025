@@ -41,23 +41,17 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '8069',
-        pathname: '/assets/**',
+        protocol: "https",
+        hostname: "**",
       },
       {
-        protocol: new URL(process.env.NEXT_PUBLIC_BACKEND_URL).protocol.slice(0, -1),
-        hostname: new URL(process.env.NEXT_PUBLIC_BACKEND_URL).hostname,
-        pathname: '/assets/**',
+        protocol: "http",
+        hostname: "**",
       },
-      {
-        protocol: 'https',
-        hostname: 's.ndtvimg.com',
-        pathname: '**',
-      }
-    ]
-  }
+    ],
+  },
 };
+
+
 
 export default nextConfig;
