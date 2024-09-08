@@ -21,7 +21,7 @@ export default function Admin() {
   const [modalAction, setModalAction] = useState<() => void>(() => { });
 
   const fetchTeamData = () => {
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/teams/all`)
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/participatingteam/all`)
       .then((response) => response.json())
       .then((data) => {
         setParticipatingTeams(data);

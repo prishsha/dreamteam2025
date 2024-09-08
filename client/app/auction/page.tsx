@@ -2,8 +2,11 @@
 
 import ConnectionStatus from "@/components/ConnectionStatus";
 import { GameState } from "@/types/game";
+import { AssignPlayerMessage, ServerMessage } from "@/types/server";
 import { humanizePrice } from "@/utils/humanize";
+import { showToast, ToastType } from "@/utils/toast";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function AuctionPage() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -25,14 +28,22 @@ export default function AuctionPage() {
 
     ws.onmessage = (event) => {
       try {
-        const serverMessage = JSON.parse(event.data);
+        const serverMessage: ServerMessage = JSON.parse(event.data);
+
+        if (serverMessage.message) {
+          // @ts-ignore
+          const assignPlayerMessage: AssignPlayerMessage = serverMessage.message;
+          if (assignPlayerMessage.type === "assignPlayer") {
+
+            // TODO: Maybe show a modal for 3 seconds with confetti.
+            showToast(`Player ${assignPlayerMessage.player.name} has been assigned to ${assignPlayerMessage.participatingTeam.name} for ${humanizePrice(assignPlayerMessage.bidAmount)}!`, ToastType.SUCCESS);
+          }
+        }
 
         if (serverMessage.gameState) {
           setGameState(serverMessage.gameState);
-        } else if (serverMessage.message) {
-          // TODO: Implement the message recieving logic
-          console.log("Message received: ", serverMessage.message);
         }
+
       } catch (error) {
         console.error('Failed to parse message:', error);
       }

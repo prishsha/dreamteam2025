@@ -60,11 +60,22 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 			return
 		}
 
+		participatingTeam, err := queries.GetParticipatingTeam(r.Context(), int32(req.TeamId))
+		if err != nil {
+			resp["error"] = err.Error()
+			log.Error().Msg(err.Error())
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
+
+		currentPlayer := gameState.CurrentPlayerInBid
+		currentBidAmount := gameState.CurrentBidAmount
+
 		err = queries.AssignTeamToPlayer(r.Context(),
 			db.AssignTeamToPlayerParams{
-				ID:      int32(req.TeamId),
-				ID_2:    gameState.CurrentPlayerInBid.ID,
-				Balance: gameState.CurrentBidAmount,
+				ID:      participatingTeam.ID,
+				ID_2:    currentPlayer.ID,
+				Balance: currentBidAmount,
 			})
 
 		if err != nil {
@@ -82,22 +93,32 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 		}
 
 		gameState.CurrentPlayerInBid = gameState.NextPlayerInBid
-		gameState.CurrentBidAmount = gameState.CurrentPlayerInBid.BasePrice
+		gameState.CurrentBidAmount = gameState.NextPlayerInBid.BasePrice
 		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.CurrentBidAmount)
 
 		nextPlayer, err := queries.GetPlayer(r.Context(), gameState.CurrentPlayerInBid.ID+1)
-    if err != nil {
-      resp["error"] = err.Error()
-      log.Error().Msg(err.Error())
-      utils.JSON(w, http.StatusInternalServerError, resp)
-      return
-    }
+		if err != nil {
+			resp["error"] = err.Error()
+			log.Error().Msg(err.Error())
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
 
 		gameState.NextPlayerInBid = &nextPlayer
 
+		message := models.AssignMessage{
+			Type:   "assignPlayer",
+			ParticipatingTeam:   participatingTeam,
+			Player: *currentPlayer,
+			BidAmount: int(currentBidAmount),
+		}
+
+		jsonData, err := json.Marshal(message)
+
 		clientManager.Broadcast <- &models.ServerMessage{
-      GameState: gameState,
-    }
+			Message:   jsonData,
+			GameState: gameState,
+		}
 
 		utils.JSON(w, http.StatusOK, resp)
 		return
@@ -118,11 +139,9 @@ func IncrementBidAmount(clientManager *models.ClientManager, gameState *models.G
 		gameState.CurrentBidAmount = gameState.NextBidAmount
 		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.CurrentBidAmount)
 
-
-
 		clientManager.Broadcast <- &models.ServerMessage{
-      GameState: gameState,
-    }
+			GameState: gameState,
+		}
 
 		utils.JSON(w, http.StatusOK, resp)
 		return

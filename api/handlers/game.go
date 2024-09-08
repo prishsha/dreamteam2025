@@ -35,7 +35,6 @@ func GameStateSocket(clientManger *models.ClientManager, gameState *models.GameS
 
 		serverMessage := models.ServerMessage{
 			GameState: gameState,
-			Message:   "Welcome to the game",
 		}
 
 		jsonData, err := json.Marshal(serverMessage)

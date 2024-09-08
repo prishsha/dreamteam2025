@@ -11,6 +11,8 @@ const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePri
     return 'bg-gradient-to-br from-gray-200 to-gray-400 border-gray-100';
   };
 
+  // TODO: Find some way to proxy image from the backend instead of a redirect and replace all img with next image for optimization
+
   return (
     <div key={id} className={`relative ${getCardStyle(rating)} rounded-lg overflow-hidden shadow-lg p-4 border-4`}>
       <div className="absolute top-4 left-4 z-10">
@@ -21,6 +23,7 @@ const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePri
       </div>
       <div className="relative h-80">
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-0"></div>
+        
         <Image
           src={`/cdn/${avatarUrl.String}`}
           alt={name}

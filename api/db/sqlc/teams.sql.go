@@ -9,13 +9,13 @@ import (
 	"context"
 )
 
-const getAllTeams = `-- name: GetAllTeams :many
+const getAllParticipatingTeams = `-- name: GetAllParticipatingTeams :many
 SELECT id, name, balance FROM participant_teams
 ORDER BY id
 `
 
-func (q *Queries) GetAllTeams(ctx context.Context) ([]ParticipantTeam, error) {
-	rows, err := q.db.QueryContext(ctx, getAllTeams)
+func (q *Queries) GetAllParticipatingTeams(ctx context.Context) ([]ParticipantTeam, error) {
+	rows, err := q.db.QueryContext(ctx, getAllParticipatingTeams)
 	if err != nil {
 		return nil, err
 	}
@@ -35,4 +35,17 @@ func (q *Queries) GetAllTeams(ctx context.Context) ([]ParticipantTeam, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const getParticipatingTeam = `-- name: GetParticipatingTeam :one
+SELECT id, name, balance FROM participant_teams
+WHERE id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetParticipatingTeam(ctx context.Context, id int32) (ParticipantTeam, error) {
+	row := q.db.QueryRowContext(ctx, getParticipatingTeam, id)
+	var i ParticipantTeam
+	err := row.Scan(&i.ID, &i.Name, &i.Balance)
+	return i, err
 }

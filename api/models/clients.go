@@ -5,11 +5,19 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
+	db "github.com/milindmadhukar/dreamteam/db/sqlc"
 	"github.com/rs/zerolog/log"
 )
 
+type AssignMessage struct {
+  Type string `json:"type"`
+  ParticipatingTeam db.ParticipantTeam `json:"participatingTeam"`
+  Player db.Player `json:"player"`
+  BidAmount int `json:"bidAmount"`
+}
+
 type ServerMessage struct {
-	Message   string     `json:"message,omitempty"`
+	Message   json.RawMessage     `json:"message,omitempty"`
 	GameState *GameState `json:"gameState,omitempty"`
 }
 
