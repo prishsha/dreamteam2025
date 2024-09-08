@@ -6,7 +6,6 @@ import { AssignPlayerMessage, ServerMessage } from "@/types/server";
 import { humanizePrice } from "@/utils/humanize";
 import { showToast, ToastType } from "@/utils/toast";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 export default function AuctionPage() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -31,7 +30,7 @@ export default function AuctionPage() {
         const serverMessage: ServerMessage = JSON.parse(event.data);
 
         if (serverMessage.message) {
-          // @ts-ignore
+          // @ts-expect-error
           const assignPlayerMessage: AssignPlayerMessage = serverMessage.message;
           if (assignPlayerMessage.type === "assignPlayer") {
 
