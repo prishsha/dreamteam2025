@@ -17,47 +17,68 @@ export default function AuctionPage() {
     const wsUrl = backendUrl!.replace(/^https?:\/\//, '');
     const wsProtocol = backendUrl!.startsWith("https") ? "wss" : "ws";
 
-    const ws = new WebSocket(`${wsProtocol}://${wsUrl}/game/ws`);
+    let ws: WebSocket | null = null;
+    let retryInterval: NodeJS.Timeout | null = null;
 
-    ws.onopen = () => {
-      setConnected(true);
-      console.log(socket?.readyState)
-      console.log('Connected to WebSocket');
-    };
+    const connectWebSocket = () => {
+      ws = new WebSocket(`${wsProtocol}://${wsUrl}/game/ws`);
 
-    ws.onmessage = (event) => {
-      try {
-        const serverMessage: ServerMessage = JSON.parse(event.data);
+      ws.onopen = () => {
+        setConnected(true);
+        console.log('Connected to WebSocket');
+        if (retryInterval) {
+          clearInterval(retryInterval);
+          retryInterval = null;
+        }
+      };
 
-        if (serverMessage.message) {
-          // @ts-expect-error: We're not checking for the message type here.
-          const assignPlayerMessage: AssignPlayerMessage = serverMessage.message;
-          if (assignPlayerMessage.type === "assignPlayer") {
+      ws.onmessage = (event) => {
+        try {
+          const serverMessage: ServerMessage = JSON.parse(event.data);
 
-            // TODO: Maybe show a modal for 3 seconds with confetti.
-            showToast(`Player ${assignPlayerMessage.player.name} has been assigned to ${assignPlayerMessage.participatingTeam.name} for ${humanizePrice(assignPlayerMessage.bidAmount)}!`, ToastType.SUCCESS);
+          if (serverMessage.message) {
+            // @ts-expect-error: We're not checking for the message type here.
+            const assignPlayerMessage: AssignPlayerMessage = serverMessage.message;
+            if (assignPlayerMessage.type === "assignPlayer") {
+
+              // TODO: Maybe show a modal for 3 seconds with confetti.
+              showToast(`${assignPlayerMessage.player.name} has been assigned to ${assignPlayerMessage.participatingTeam.name} for ${humanizePrice(assignPlayerMessage.bidAmount)}!`, ToastType.SUCCESS);
+            }
           }
-        }
 
-        if (serverMessage.gameState) {
-          setGameState(serverMessage.gameState);
-        }
+          if (serverMessage.gameState) {
+            setGameState(serverMessage.gameState);
+          }
 
-      } catch (error) {
-        console.error('Failed to parse message:', error);
-      }
+        } catch (error) {
+          console.error('Failed to parse message:', error);
+        }
+      };
+
+      ws.onclose = () => {
+        setConnected(false);
+        console.log('Disconnected from WebSocket');
+        if (!retryInterval) {
+          retryInterval = setInterval(() => {
+            console.log('Attempting to reconnect...');
+            connectWebSocket();
+          }, 5000);
+        }
+      };
+
+      setSocket(ws);
     };
 
-    ws.onclose = () => {
-      setConnected(false);
-      console.log('Disconnected from WebSocket');
-    };
-
-    setSocket(ws);
+    connectWebSocket();
 
     return () => {
       setConnected(false);
-      ws.close();
+      if (ws) {
+        ws.close();
+      }
+      if (retryInterval) {
+        clearInterval(retryInterval);
+      }
     };
   }, []);
 

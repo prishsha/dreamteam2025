@@ -118,39 +118,60 @@ export default function Admin() {
     const wsUrl = backendUrl!.replace(/^https?:\/\//, '');
     const wsProtocol = backendUrl!.startsWith("https") ? "wss" : "ws";
 
-    const ws = new WebSocket(`${wsProtocol}://${wsUrl}/game/ws`);
+    let ws: WebSocket | null = null;
+    let retryInterval: NodeJS.Timeout | null = null;
 
-    ws.onopen = () => {
-      setConnected(true);
-      console.log('Connected to WebSocket');
-      console.log(socket?.readyState)
-    };
+    const connectWebSocket = () => {
+      ws = new WebSocket(`${wsProtocol}://${wsUrl}/game/ws`);
 
-    ws.onmessage = (event) => {
-      try {
-        const serverMessage = JSON.parse(event.data);
-
-        if (serverMessage.gameState) {
-          setGameState(serverMessage.gameState);
-        } else if (serverMessage.message) {
-          // TODO: Implement the message recieving logic
-          console.log("Message received: ", serverMessage.message);
+      ws.onopen = () => {
+        setConnected(true);
+        console.log('Connected to WebSocket');
+        if (retryInterval) {
+          clearInterval(retryInterval);
+          retryInterval = null;
         }
-      } catch (error) {
-        console.error('Failed to parse message:', error);
-      }
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const serverMessage = JSON.parse(event.data);
+
+          if (serverMessage.gameState) {
+            setGameState(serverMessage.gameState);
+          } else if (serverMessage.message) {
+            // TODO: Implement the message receiving logic
+            console.log("Message received: ", serverMessage.message);
+          }
+        } catch (error) {
+          console.error('Failed to parse message:', error);
+        }
+      };
+
+      ws.onclose = () => {
+        setConnected(false);
+        console.log('Disconnected from WebSocket');
+        if (!retryInterval) {
+          retryInterval = setInterval(() => {
+            console.log('Attempting to reconnect...');
+            connectWebSocket();
+          }, 5000);
+        }
+      };
+
+      setSocket(ws);
     };
 
-    ws.onclose = () => {
-      setConnected(false);
-      console.log('Disconnected from WebSocket');
-    };
-
-    setSocket(ws);
+    connectWebSocket();
 
     return () => {
       setConnected(false);
-      ws.close();
+      if (ws) {
+        ws.close();
+      }
+      if (retryInterval) {
+        clearInterval(retryInterval);
+      }
     };
   }, []);
 
