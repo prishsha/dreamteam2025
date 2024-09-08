@@ -126,6 +126,7 @@ export default function Admin() {
 
       ws.onopen = () => {
         setConnected(true);
+        console.log(socket)
         console.log('Connected to WebSocket');
         if (retryInterval) {
           clearInterval(retryInterval);
