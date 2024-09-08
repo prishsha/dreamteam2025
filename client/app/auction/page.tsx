@@ -30,7 +30,7 @@ export default function AuctionPage() {
         const serverMessage: ServerMessage = JSON.parse(event.data);
 
         if (serverMessage.message) {
-          // @ts-expect-error
+          // @ts-expect-error: We're not checking for the message type here.
           const assignPlayerMessage: AssignPlayerMessage = serverMessage.message;
           if (assignPlayerMessage.type === "assignPlayer") {
 
