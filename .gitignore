@@ -41,3 +41,4 @@ client/*.tsbuildinfo
 client/next-env.d.ts
 
 client/.env
+api/memo.md
