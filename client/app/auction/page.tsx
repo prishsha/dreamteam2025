@@ -5,6 +5,7 @@ import { GameState } from "@/types/game";
 import { AssignPlayerMessage, ServerMessage } from "@/types/server";
 import { humanizePrice } from "@/utils/humanize";
 import { showToast, ToastType } from "@/utils/toast";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function AuctionPage() {
@@ -93,8 +94,8 @@ export default function AuctionPage() {
         <div className="text-center">
           <h1 className="text-5xl font-bold mb-8">Current Player</h1>
           {gameState.CurrentPlayerInBid.avatarUrl.Valid && (
-            <img
-              src={`/cdn/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
+            <Image
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/players/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
               alt={gameState.CurrentPlayerInBid.name}
               className="w-64 h-64 rounded-full object-cover mx-auto mb-6"
             />

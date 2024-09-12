@@ -10,6 +10,7 @@ import TeamLogos from "@/utils/teamlogos";
 import { showToast, ToastType } from "@/utils/toast";
 import { useEffect, useState } from "react";
 import ConfirmationModal from "@/components/ConfirmationModal";
+import Image from "next/image";
 
 export default function Admin() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -195,8 +196,8 @@ export default function Admin() {
         <div className="w-1/2 h-screen flex">
           <div className="w-1/2 h-full relative">
             {gameState?.CurrentPlayerInBid?.avatarUrl.Valid && (
-              <img
-                src={`/cdn/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
+              <Image
+                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/players/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
                 alt={gameState.CurrentPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover"
               />
@@ -211,8 +212,8 @@ export default function Admin() {
           </div>
           <div className="w-1/2 h-full relative">
             {gameState?.NextPlayerInBid?.avatarUrl.Valid && (
-              <img
-                src={`/cdn/${gameState.NextPlayerInBid.avatarUrl.String}`}
+              <Image
+                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/players/${gameState.NextPlayerInBid.avatarUrl.String}`}
                 alt={gameState.NextPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover opacity-70"
               />
@@ -276,7 +277,7 @@ export default function Admin() {
                   onClick={() => assignPlayerToTeam(team)}
                   className="bg-gray-200 hover:bg-gray-300 p-2 rounded-lg flex flex-col items-center justify-center"
                 >
-                  <img
+                  <Image
                     src={TeamLogos(team.name)}
                     alt={team.name}
                     className="w-12 h-12 object-cover rounded-full mb-1"

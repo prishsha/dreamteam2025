@@ -1,17 +1,6 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-  async redirects() {
-    return [
-      {
-        // NOTE: No CDN as of now obviously, but this is a placeholder for future use (if)
-        source: '/cdn/:slug*',
-        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/:slug*`,
-        permanent: true,
-      }
-    ]
-  },
-
   async headers() {
     return [
       {
