@@ -1,7 +1,7 @@
 import { Player } from '@/types/player';
 import GetCountryFlagIcon from '@/utils/flags';
 import { humanizePrice } from '@/utils/humanize';
-import teamGradiants from '@/utils/teamColours';
+import getTeamColours from '@/utils/teamColours';
 import Image from 'next/image';
 import RatingHolder from '@/assets/RatingHolder.svg';
 import Star from '@/assets/Star.svg';
@@ -17,7 +17,7 @@ const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePri
   };
 
 
-  const colours = teamGradiants(iplTeamName.String)
+  const colours = getTeamColours(iplTeamName.String)
 
   const getGradient = () => {
     return {

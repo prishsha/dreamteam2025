@@ -6,8 +6,8 @@ type GameState struct {
 	IsBiddingActive bool 
 	IsFinished      bool
 
-	CurrentPlayerInBid *db.Player
-	NextPlayerInBid    *db.Player
+	CurrentPlayerInBid *db.GetPlayerRow
+	NextPlayerInBid    *db.GetPlayerRow
 	CurrentBidAmount   int32
 	NextBidAmount      int32
 }

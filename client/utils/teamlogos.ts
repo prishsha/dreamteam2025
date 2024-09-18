@@ -19,7 +19,11 @@ const TeamLogos = (team: string) => {
     case 'Sunrisers Hyderabad':
       return 'https://documents.iplt20.com/ipl/SRH/Logos/Logooutline/SRHoutline.png';
     case 'Gujarat Titans':
-      return 'https://documents.iplt20.com/ipl/GT/Logos/Logooutline/GToutline.png'
+      return 'https://documents.iplt20.com/ipl/GT/Logos/Logooutline/GToutline.png';
+    case 'Deccan Chargers':
+      return 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a6/HyderabadDeccanChargers.png/200px-HyderabadDeccanChargers.png';
+    case 'Rising Pune Supergiant':
+      return 'https://www.pngall.com/wp-content/uploads/2017/04/Rising-Pune-Supergiants-Logo-PNG.png'
     default:
       return '';
   }

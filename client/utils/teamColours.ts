@@ -1,9 +1,9 @@
-interface TeamColours {
+export interface TeamColours {
   start: string;
   end: string;
 }
 
-const teamGradiants = (team: string): TeamColours => {
+const getTeamColours = (team: string): TeamColours => {
   switch (team) {
     case 'Chennai Super Kings':
       return { start: '#EA9C08', end: '#EDD819' };
@@ -34,4 +34,5 @@ const teamGradiants = (team: string): TeamColours => {
   }
 }
 
-export default teamGradiants;
+
+export default getTeamColours;

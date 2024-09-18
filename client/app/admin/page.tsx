@@ -199,7 +199,7 @@ export default function Admin() {
               <Image
                 width={400}
                 height={400}
-                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/players/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
+                src={`${gameState.CurrentPlayerInBid.avatarUrl.String}`}
                 alt={gameState.CurrentPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover"
               />
@@ -217,7 +217,7 @@ export default function Admin() {
               <Image
                 width={400}
                 height={400}
-                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/players/${gameState.NextPlayerInBid.avatarUrl.String}`}
+                src={`${gameState.NextPlayerInBid.avatarUrl.String}`}
                 alt={gameState.NextPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover opacity-70"
               />

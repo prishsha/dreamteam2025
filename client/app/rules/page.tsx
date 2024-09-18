@@ -46,7 +46,7 @@ const RulesPage: React.FC = () => {
                 <ListItem>The Purse amount will be 60 crore.</ListItem>
                 <ListItem>The bidding process will be initiated by the Auctioneer.</ListItem>
                 <ListItem>To place a bid, one member from a team is required to raise the placard only once.</ListItem>
-                <ListItem>Bid once placed can't be canceled.</ListItem>
+                <ListItem>Bid once placed can&apos;t be canceled.</ListItem>
                 <ListItem>The sale of a player will be declared by the auctioneer only.</ListItem>
                 <ListItem>For every sold player, the team moderator will be provided a stamped player receipt, which is to be kept safe till the final evaluation.</ListItem>
                 <ListItem>Players will be sold to the team with the highest bid.</ListItem>
