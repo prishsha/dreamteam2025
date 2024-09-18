@@ -95,8 +95,29 @@ func StartBidding(queries *db.Queries, clientManger *models.ClientManager, gameS
 			return
 		}
 
-		gameState.CurrentPlayerInBid = &firstPlayer
-		gameState.NextPlayerInBid = &nextPlayer
+		gameState.CurrentPlayerInBid = &db.Player{
+			ID:        firstPlayer.ID,
+			Name:      firstPlayer.Name,
+			Country:   firstPlayer.Country,
+			Role:      firstPlayer.Role,
+			Rating:    firstPlayer.Rating,
+			BasePrice: firstPlayer.BasePrice,
+			AvatarUrl: firstPlayer.AvatarUrl,
+			TeamID:    firstPlayer.TeamID,
+			IplTeam:   firstPlayer.IplTeam,
+		}
+
+		gameState.NextPlayerInBid = &db.Player{
+			ID:        nextPlayer.ID,
+			Name:      nextPlayer.Name,
+			Country:   nextPlayer.Country,
+			Role:      nextPlayer.Role,
+			Rating:    nextPlayer.Rating,
+			BasePrice: nextPlayer.BasePrice,
+			AvatarUrl: nextPlayer.AvatarUrl,
+			TeamID:    nextPlayer.TeamID,
+			IplTeam:   nextPlayer.IplTeam,
+		}
 
 		gameState.CurrentBidAmount = firstPlayer.BasePrice
 		gameState.NextBidAmount = utils.CalculateNextBidAmount(firstPlayer.BasePrice)

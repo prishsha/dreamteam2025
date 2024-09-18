@@ -197,6 +197,8 @@ export default function Admin() {
           <div className="w-1/2 h-full relative">
             {gameState?.CurrentPlayerInBid?.avatarUrl.Valid && (
               <Image
+                width={400}
+                height={400}
                 src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/players/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
                 alt={gameState.CurrentPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover"
@@ -213,6 +215,8 @@ export default function Admin() {
           <div className="w-1/2 h-full relative">
             {gameState?.NextPlayerInBid?.avatarUrl.Valid && (
               <Image
+                width={400}
+                height={400}
                 src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/players/${gameState.NextPlayerInBid.avatarUrl.String}`}
                 alt={gameState.NextPlayerInBid.name}
                 className="absolute inset-0 w-full h-full object-cover opacity-70"
@@ -279,6 +283,8 @@ export default function Admin() {
                 >
                   <Image
                     src={TeamLogos(team.name)}
+                    width={48}
+                    height={48}
                     alt={team.name}
                     className="w-12 h-12 object-cover rounded-full mb-1"
                   />

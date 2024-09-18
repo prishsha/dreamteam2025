@@ -14,6 +14,5 @@ CREATE TABLE IF NOT EXISTS players (
     base_price INTEGER NOT NULL,
     avatar_url VARCHAR(300),
     team_id INTEGER REFERENCES participant_teams(id),
-    CHECK (rating >= 0 AND rating <= 100),
     CHECK(role IN ('Batsman', 'Bowler', 'All Rounder', 'Wicket Keeper'))
 );

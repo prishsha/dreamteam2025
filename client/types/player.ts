@@ -16,4 +16,16 @@ export interface Player {
     String: string;
     Valid: boolean;
   }
+  teamId: {
+    Int64: number;
+    Valid: boolean;
+  }
+  iplTeam: {
+    Int64: number;
+    Valid: boolean;
+  }
+  iplTeamName: {
+    String: string;
+    Valid: boolean;
+  }
 }

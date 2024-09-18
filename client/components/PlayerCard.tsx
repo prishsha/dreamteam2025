@@ -1,45 +1,108 @@
 import { Player } from '@/types/player';
 import GetCountryFlagIcon from '@/utils/flags';
 import { humanizePrice } from '@/utils/humanize';
+import teamGradiants from '@/utils/teamColours';
 import Image from 'next/image';
+import RatingHolder from '@/assets/RatingHolder.svg';
+import Star from '@/assets/Star.svg';
+import HalfStar from '@/assets/HalfStar.svg';
 
-const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePrice, avatarUrl }) => {
-  const getCardStyle = (rating: number) => {
-    if (rating >= 90) return 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-300';
-    if (rating >= 80) return 'bg-gradient-to-br from-gray-300 to-gray-500 border-gray-200';
-    if (rating >= 70) return 'bg-gradient-to-br from-amber-600 to-amber-800 border-amber-500';
-    return 'bg-gradient-to-br from-gray-200 to-gray-400 border-gray-100';
+
+const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePrice, iplTeamName, avatarUrl }) => {
+  const getBorder = () => {
+    if (rating >= 90) return 'border-yellow-300';
+    if (rating >= 80) return 'border-gray-200';
+    if (rating >= 70) return 'border-amber-500';
+    return 'border-gray-100';
+  };
+
+
+  const colours = teamGradiants(iplTeamName.String)
+
+  const getGradient = () => {
+    return {
+      background: `linear-gradient(to bottom right, ${colours.start}, ${colours.end})`
+    };
+  };
+
+  const renderStars = (rating: number) => {
+    const fullStars = Math.floor(rating / 20);
+    const halfStar = rating % 20 >= 10;
+    return (
+      <div className="flex space-x-1">
+        {[...Array(5)].map((_, i) => (
+          <span key={i} className="w-4 h-4 relative">
+            {i < fullStars ? (
+              <Image src={Star} alt="Full Star" layout="fill" />
+            ) : i === fullStars && halfStar ? (
+              <Image src={HalfStar} alt="Half Star" layout="fill" />
+            ) : (
+              <Image src={Star} alt="Empty Star" layout="fill" className="opacity-30" />
+            )}
+          </span>
+        ))}
+      </div>
+    );
   };
 
   return (
-    <div key={id} className={`relative ${getCardStyle(rating)} rounded-lg overflow-hidden shadow-lg p-4 border-4`}>
-      <div className="absolute top-4 left-4 z-10">
-        <span className="text-6xl font-bold text-white opacity-80">{rating}</span>
-      </div>
-      <div className="absolute top-20 left-4 z-10 bg-white rounded-full p-1">
-        <Image src={GetCountryFlagIcon(country)} alt={country} width={32} height={32} />
-      </div>
-      <div className="relative h-80">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-0"></div>
+    <div key={id} className={`relative ${getBorder()} rounded-lg overflow-hidden shadow-lg border-4`} style={getGradient()}>
 
+      <div className="absolute top-4 left-4 z-10">
+        <div className="relative w-12 h-12">
+          <Image src={RatingHolder} alt="Star" layout="fill" className="text-yellow-300" />
+          <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-white">{rating}</span>
+        </div>
+      </div>
+
+      <div className="absolute top-4 right-4 z-10">
+        <div className="relative w-12 h-12">
+          <Image src={GetCountryFlagIcon(country)} alt={country} layout="fill" objectFit="cover" />
+        </div>
+      </div>
+
+      <div className="relative h-80 pt-4">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/cardbg.png`}
+            alt="Dream Team Logo"
+            className='opacity-30'
+            layout='fill'
+          />
+        </div>
         <Image
-          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/players/${avatarUrl.String}`}
+          src={`${avatarUrl.String}`}
           alt={name}
           layout="fill"
           objectFit="cover"
           className="rounded-t-lg"
         />
       </div>
-      <div className="mt-4 text-center relative z-10">
-        <h2 className="text-3xl font-bold text-white">{name}</h2>
-        <p className="text-sm text-gray-200">{country}</p>
-        <div className="mt-4 flex justify-between items-center">
-          <span className="bg-white text-gray-800 font-bold py-1 px-3 rounded-full">{role}</span>
-          <span className="text-white font-semibold">Base Price: <span className="text-yellow-300 font-bold">₹{humanizePrice(basePrice)}</span></span>
+      <div className="relative">
+        <div className={`absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white text-gray-800 font-bold py-2 px-4 rounded-full shadow-lg text-center z-10 border-4 whitespace-nowrap overflow-hidden text-ellipsis max-w-full`} style={{ borderColor: colours.end }}>
+          {name.toUpperCase()}
+        </div>
+        <div className="flex">
+          <div className="bg-violet-950 relative flex-grow w-3/4">
+            <div className="w-full pr-2">
+              <div className="mt-3 mb-4 relative z-10 flex flex-col items-center justify-center h-full">
+                <div className="mt-4">
+                  {renderStars(rating)}
+                </div>
+                <div className="mt-2">
+                  <span className="text-white font-bold text-3xl uppercase">{role}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="p-4 flex flex-col items-center justify-center w-1/4" style={{ backgroundColor: colours.end }}>
+            <span className="text-white font-bold text-right text-3xl"><span className="text-white font-bold">{humanizePrice(basePrice).replace(/(\d+)([A-Za-z]+)/, '$1')}</span></span>
+            <span className="text-white font-bold text-right text-xl">{humanizePrice(basePrice).replace(/(\d+)([A-Za-z]+)/, '$2').toUpperCase()}</span>
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default PlayerCard;

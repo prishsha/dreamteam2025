@@ -104,7 +104,17 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 			return
 		}
 
-		gameState.NextPlayerInBid = &nextPlayer
+		gameState.NextPlayerInBid = &db.Player{
+			ID:        nextPlayer.ID,
+			Name:      nextPlayer.Name,
+			Country:   nextPlayer.Country,
+			Role:      nextPlayer.Role,
+			Rating:    nextPlayer.Rating,
+			BasePrice: nextPlayer.BasePrice,
+			AvatarUrl: nextPlayer.AvatarUrl,
+			TeamID:    nextPlayer.TeamID,
+			IplTeam:   nextPlayer.IplTeam,
+		}
 
 		message := models.AssignMessage{
 			Type:   "assignPlayer",

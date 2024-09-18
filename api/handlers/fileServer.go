@@ -8,6 +8,9 @@ import (
 )
 
 func FileServer(r chi.Router, path string, root http.FileSystem) {
+
+  // TODO: Images will be broken without handling w, h, q
+
 	if strings.ContainsAny(path, "{}*") {
 		panic("FileServer does not permit any URL parameters.")
 	}

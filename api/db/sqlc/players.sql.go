@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const assignTeamToPlayer = `-- name: AssignTeamToPlayer :exec
@@ -34,8 +35,23 @@ func (q *Queries) AssignTeamToPlayer(ctx context.Context, arg AssignTeamToPlayer
 }
 
 const getAllPlayers = `-- name: GetAllPlayers :many
-SELECT id, name, country, role, rating, base_price, avatar_url, team_id FROM players
-ORDER BY id
+SELECT 
+    players.id,
+    players.name,
+    players.country,
+    players.role,
+    players.rating,
+    players.base_price,
+    players.avatar_url,
+    players.team_id,
+    players.ipl_team,
+    participant_teams.name AS ipl_team_name
+FROM 
+    players
+LEFT JOIN 
+    participant_teams ON players.ipl_team = participant_teams.id
+ORDER BY 
+    players.id
 LIMIT $1 OFFSET $2
 `
 
@@ -44,15 +60,28 @@ type GetAllPlayersParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetAllPlayers(ctx context.Context, arg GetAllPlayersParams) ([]Player, error) {
+type GetAllPlayersRow struct {
+	ID          int32          `json:"id"`
+	Name        string         `json:"name"`
+	Country     string         `json:"country"`
+	Role        string         `json:"role"`
+	Rating      int32          `json:"rating"`
+	BasePrice   int32          `json:"basePrice"`
+	AvatarUrl   sql.NullString `json:"avatarUrl"`
+	TeamID      sql.NullInt32  `json:"teamId"`
+	IplTeam     sql.NullInt64  `json:"iplTeam"`
+	IplTeamName sql.NullString `json:"iplTeamName"`
+}
+
+func (q *Queries) GetAllPlayers(ctx context.Context, arg GetAllPlayersParams) ([]GetAllPlayersRow, error) {
 	rows, err := q.db.QueryContext(ctx, getAllPlayers, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Player
+	var items []GetAllPlayersRow
 	for rows.Next() {
-		var i Player
+		var i GetAllPlayersRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -62,6 +91,8 @@ func (q *Queries) GetAllPlayers(ctx context.Context, arg GetAllPlayersParams) ([
 			&i.BasePrice,
 			&i.AvatarUrl,
 			&i.TeamID,
+			&i.IplTeam,
+			&i.IplTeamName,
 		); err != nil {
 			return nil, err
 		}
@@ -77,14 +108,41 @@ func (q *Queries) GetAllPlayers(ctx context.Context, arg GetAllPlayersParams) ([
 }
 
 const getPlayer = `-- name: GetPlayer :one
-SELECT id, name, country, role, rating, base_price, avatar_url, team_id FROM players 
-WHERE id = $1
+SELECT 
+    players.id,
+    players.name,
+    players.country,
+    players.role,
+    players.rating,
+    players.base_price,
+    players.avatar_url,
+    players.team_id,
+    players.ipl_team,
+    participant_teams.name AS ipl_team_name
+FROM 
+    players
+LEFT JOIN 
+    participant_teams ON players.ipl_team = participant_teams.id
+WHERE players.id = $1
 LIMIT 1
 `
 
-func (q *Queries) GetPlayer(ctx context.Context, id int32) (Player, error) {
+type GetPlayerRow struct {
+	ID          int32          `json:"id"`
+	Name        string         `json:"name"`
+	Country     string         `json:"country"`
+	Role        string         `json:"role"`
+	Rating      int32          `json:"rating"`
+	BasePrice   int32          `json:"basePrice"`
+	AvatarUrl   sql.NullString `json:"avatarUrl"`
+	TeamID      sql.NullInt32  `json:"teamId"`
+	IplTeam     sql.NullInt64  `json:"iplTeam"`
+	IplTeamName sql.NullString `json:"iplTeamName"`
+}
+
+func (q *Queries) GetPlayer(ctx context.Context, id int32) (GetPlayerRow, error) {
 	row := q.db.QueryRowContext(ctx, getPlayer, id)
-	var i Player
+	var i GetPlayerRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -94,6 +152,8 @@ func (q *Queries) GetPlayer(ctx context.Context, id int32) (Player, error) {
 		&i.BasePrice,
 		&i.AvatarUrl,
 		&i.TeamID,
+		&i.IplTeam,
+		&i.IplTeamName,
 	)
 	return i, err
 }

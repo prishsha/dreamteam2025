@@ -95,6 +95,8 @@ export default function AuctionPage() {
           <h1 className="text-5xl font-bold mb-8">Current Player</h1>
           {gameState.CurrentPlayerInBid.avatarUrl.Valid && (
             <Image
+              width={256}
+              height={256}
               src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/players/${gameState.CurrentPlayerInBid.avatarUrl.String}`}
               alt={gameState.CurrentPlayerInBid.name}
               className="w-64 h-64 rounded-full object-cover mx-auto mb-6"

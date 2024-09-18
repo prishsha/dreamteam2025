@@ -23,4 +23,5 @@ type Player struct {
 	BasePrice int32          `json:"basePrice"`
 	AvatarUrl sql.NullString `json:"avatarUrl"`
 	TeamID    sql.NullInt32  `json:"teamId"`
+	IplTeam   sql.NullInt64  `json:"iplTeam"`
 }
