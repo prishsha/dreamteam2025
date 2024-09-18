@@ -135,7 +135,7 @@ func LogoutHandler() http.HandlerFunc {
 			return
 		}
 
-		http.Redirect(w, r, models.Config.API.FrontendURL+"/login", http.StatusFound)
+		http.Redirect(w, r, models.Config.API.FrontendURL, http.StatusFound)
 	}
 }
 
@@ -180,13 +180,17 @@ func IsAuthenticatedHandler(queries *db.Queries) http.HandlerFunc {
 			return
 		}
 
+    resp["is_admin"] = false
+
+		for _, email := range models.Config.API.AdminEmails {
+			if email == user.Email {
+				resp["is_admin"] = true
+				break
+			}
+		}
+
 		resp["is_authenticated"] = true
 		resp["user"] = user
 		utils.JSON(w, http.StatusOK, resp)
-	}
-}
-
-func IsAdminHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
 	}
 }

@@ -11,8 +11,9 @@ import { showToast, ToastType } from "@/utils/toast";
 import { useEffect, useState } from "react";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import Image from "next/image";
+import AdminLayout from "./layout";
 
-export default function Admin() {
+const AdminPage = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -309,4 +310,6 @@ export default function Admin() {
   );
 }
 
+AdminPage.getLayout = (page: React.ReactNode) => <AdminLayout>{page}</AdminLayout>;
 
+export default AdminPage;

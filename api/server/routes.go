@@ -29,6 +29,7 @@ func (s *Server) HandleRoutes(mainRouter *chi.Mux) {
 
   mainRouter.Get("/auth/url", handlers.GetAuthURLHandler(s.OauthConf))
   mainRouter.Get("/auth/callback", handlers.CallbackHandler(s.Queries, s.OauthConf))
+  mainRouter.Get("/auth/logout", handlers.LogoutHandler())
   mainRouter.Get("/auth/is-authenticated", handlers.IsAuthenticatedHandler(s.Queries))
 
 	fileRouter := chi.NewRouter()

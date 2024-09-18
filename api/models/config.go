@@ -23,11 +23,11 @@ type APIConf struct {
 	Host         string   `mapstructure:"host"`
 	Port         string   `mapstructure:"port"`
 	JWTSecretKey string   `mapstructure:"jwt_secret"`
-	AdminIds     []string `mapstructure:"admin_ids"`
+	AdminEmails  []string `mapstructure:"admin_emails"`
 	OAuthState   string   `mapstructure:"oauth_state"`
 	SessionKey   string   `mapstructure:"session_key"`
-	IsProd       bool   `mapstructure:"is_prod"`
-  FrontendURL  string   `mapstructure:"frontend_url"`
+	IsProd       bool     `mapstructure:"is_prod"`
+	FrontendURL  string   `mapstructure:"frontend_url"`
 }
 
 type GoogleOAuthConf struct {
