@@ -1,34 +1,65 @@
-import type { Metadata } from "next";
+'use client'
+
 import "./globals.css";
 import { Toast } from "@/components/Toast";
-
-//const geistSans = localFont({
-//src: "./fonts/GeistVF.woff",
-//variable: "--font-geist-sans",
-//weight: "100 900",
-//});
-//const geistMono = localFont({
-//src: "./fonts/GeistMonoVF.woff",
-//variable: "--font-geist-mono",
-//weight: "100 900",
-//});
-
-export const metadata: Metadata = {
-  title: "DreamTeam 6.0",
-  description: "DA hum kr lenge tum dream team me ja k team banao",
-};
+import { useEffect, useState } from "react";
+import { IsAuthenticatedResponse } from "@/types/auth";
+import Head from "next/head";
+import Spinner from "@/components/Spinner";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  const checkAuthorization = () => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/is-authenticated`, {
+      credentials: 'include'
+    })
+      .then(res => res.json())
+      .then((data: IsAuthenticatedResponse) => {
+        if (data.is_authenticated) {
+          setIsAuthenticated(true);
+        }
+        setLoading(false);
+      }).catch(err => {
+        console.error(err);
+        setLoading(false);
+      })
+  };
+
+  useEffect(() => {
+    checkAuthorization();
+  }, []);
+
   return (
     <html lang="en">
-      <body
-        className="antialiased"
-      >
-        {children}
+      <Head>
+        <title>DreamTeam</title>
+      </Head>
+      <body className="antialiased">
+        {loading ? (
+          <div className="flex-col items-center flex justify-center h-[calc(100vh-60px)]">
+            <Spinner />
+          </div>
+        ) : isAuthenticated ? (
+          children
+        ) : (
+          <div className="flex-col items-center flex justify-center h-[calc(100vh-60px)]">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() => {
+                window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
+              }}
+            >
+              Login
+            </button>
+          </div>
+        )}
         <Toast />
       </body>
     </html>

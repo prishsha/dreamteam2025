@@ -19,7 +19,8 @@ func (s *Server) HandleRoutes(mainRouter *chi.Mux) {
 
 	mainRouter.Get("/players/all", handlers.GetAllPlayers(s.Queries))
 	mainRouter.Post("/players/assign-team", handlers.AssignTeamToPlayer(s.Queries, s.ClientManager, s.GameState))
-	mainRouter.Post("/players/increment-bid", handlers.IncrementBidAmount(s.ClientManager, s.GameState))
+	mainRouter.Post("/players/increment-bid", handlers.IncrementBidAmount(s.Queries, s.ClientManager, s.GameState))
+	mainRouter.Post("/players/decrement-bid", handlers.DecrementBidAmount(s.Queries, s.ClientManager, s.GameState))
 
 	mainRouter.Get("/participatingteam/{participatingTeamId}", handlers.GetParticipatingTeam(s.Queries))
 	mainRouter.Get("/participatingteam/all", handlers.GetAllParticipatingTeams(s.Queries))
@@ -27,10 +28,10 @@ func (s *Server) HandleRoutes(mainRouter *chi.Mux) {
 	mainRouter.Get("/game/ws", handlers.GameStateSocket(s.ClientManager, s.GameState))
 	mainRouter.Post("/game/start", handlers.StartBidding(s.Queries, s.ClientManager, s.GameState))
 
-  mainRouter.Get("/auth/url", handlers.GetAuthURLHandler(s.OauthConf))
-  mainRouter.Get("/auth/callback", handlers.CallbackHandler(s.Queries, s.OauthConf))
-  mainRouter.Get("/auth/logout", handlers.LogoutHandler())
-  mainRouter.Get("/auth/is-authenticated", handlers.IsAuthenticatedHandler(s.Queries))
+	mainRouter.Get("/auth/login", handlers.GetAuthURLHandler(s.OauthConf))
+	mainRouter.Get("/auth/callback", handlers.CallbackHandler(s.Queries, s.OauthConf))
+	mainRouter.Get("/auth/logout", handlers.LogoutHandler())
+	mainRouter.Get("/auth/is-authenticated", handlers.IsAuthenticatedHandler(s.Queries))
 
 	fileRouter := chi.NewRouter()
 	handlers.FileServer(fileRouter, "/", http.Dir("./assets/"))

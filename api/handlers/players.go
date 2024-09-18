@@ -43,6 +43,34 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 	return func(w http.ResponseWriter, r *http.Request) {
 		var resp map[string]interface{} = make(map[string]interface{})
 
+		jwtTokenCookie, err := r.Cookie("token")
+
+		if err != nil {
+			resp["error"] = "No token found"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		userId, errMsg, status := utils.GetUserIdFromJWT(jwtTokenCookie.Value)
+		if errMsg != "" {
+			resp["error"] = errMsg
+			utils.JSON(w, status, resp)
+			return
+		}
+
+		dbUser, err := queries.GetUser(r.Context(), userId)
+		if err != nil {
+			resp["error"] = err.Error()
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
+
+		if !utils.IsAdmin(dbUser.Email) {
+			resp["error"] = "Unauthorized"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
 		if gameState.CurrentPlayerInBid == nil || !gameState.IsBiddingActive || gameState.IsFinished {
 			resp["error"] = "No active bid"
 			log.Error().Msg("No active bid")
@@ -51,7 +79,7 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 		}
 
 		var req assignTeamToPlayerRequest
-		err := json.NewDecoder(r.Body).Decode(&req)
+		err = json.NewDecoder(r.Body).Decode(&req)
 
 		if err != nil {
 			resp["error"] = err.Error()
@@ -107,10 +135,10 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 		gameState.NextPlayerInBid = &nextPlayer
 
 		message := models.AssignMessage{
-			Type:   "assignPlayer",
-			ParticipatingTeam:   participatingTeam,
-			Player: *currentPlayer,
-			BidAmount: int(currentBidAmount),
+			Type:              "assignPlayer",
+			ParticipatingTeam: participatingTeam,
+			Player:            *currentPlayer,
+			BidAmount:         int(currentBidAmount),
 		}
 
 		jsonData, err := json.Marshal(message)
@@ -125,9 +153,37 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 	}
 }
 
-func IncrementBidAmount(clientManager *models.ClientManager, gameState *models.GameState) http.HandlerFunc {
+func IncrementBidAmount(queries *db.Queries, clientManager *models.ClientManager, gameState *models.GameState) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var resp map[string]interface{} = make(map[string]interface{})
+
+		jwtTokenCookie, err := r.Cookie("token")
+
+		if err != nil {
+			resp["error"] = "No token found"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		userId, errMsg, status := utils.GetUserIdFromJWT(jwtTokenCookie.Value)
+		if errMsg != "" {
+			resp["error"] = errMsg
+			utils.JSON(w, status, resp)
+			return
+		}
+
+		dbUser, err := queries.GetUser(r.Context(), userId)
+		if err != nil {
+			resp["error"] = err.Error()
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
+
+		if !utils.IsAdmin(dbUser.Email) {
+			resp["error"] = "Unauthorized"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
 
 		if gameState.CurrentPlayerInBid == nil || !gameState.IsBiddingActive || gameState.IsFinished {
 			resp["error"] = "No active bid"
@@ -138,6 +194,57 @@ func IncrementBidAmount(clientManager *models.ClientManager, gameState *models.G
 
 		gameState.CurrentBidAmount = gameState.NextBidAmount
 		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.CurrentBidAmount)
+
+		clientManager.Broadcast <- &models.ServerMessage{
+			GameState: gameState,
+		}
+
+		utils.JSON(w, http.StatusOK, resp)
+		return
+	}
+}
+
+func DecrementBidAmount(queries *db.Queries, clientManager *models.ClientManager, gameState *models.GameState) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var resp map[string]interface{} = make(map[string]interface{})
+
+		jwtTokenCookie, err := r.Cookie("token")
+
+		if err != nil {
+			resp["error"] = "No token found"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		userId, errMsg, status := utils.GetUserIdFromJWT(jwtTokenCookie.Value)
+		if errMsg != "" {
+			resp["error"] = errMsg
+			utils.JSON(w, status, resp)
+			return
+		}
+
+		dbUser, err := queries.GetUser(r.Context(), userId)
+		if err != nil {
+			resp["error"] = err.Error()
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
+
+		if !utils.IsAdmin(dbUser.Email) {
+			resp["error"] = "Unauthorized"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		if gameState.CurrentPlayerInBid == nil || !gameState.IsBiddingActive || gameState.IsFinished {
+			resp["error"] = "No active bid"
+			log.Error().Msg("No active bid")
+			utils.JSON(w, http.StatusBadRequest, resp)
+			return
+		}
+
+		gameState.NextBidAmount = gameState.CurrentBidAmount
+		gameState.CurrentBidAmount = utils.CalculatePreviousBidAmount(gameState.CurrentBidAmount)
 
 		clientManager.Broadcast <- &models.ServerMessage{
 			GameState: gameState,

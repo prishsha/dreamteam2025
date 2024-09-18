@@ -40,6 +40,7 @@ func New() *Server {
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}
+
 	models.Config = *configFromFile
 
 	s.PrepareLogger()

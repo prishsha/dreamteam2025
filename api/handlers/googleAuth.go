@@ -17,7 +17,6 @@ import (
 
 func GetAuthURLHandler(oauthConf *oauth2.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var resp map[string]interface{} = make(map[string]interface{})
 		base_url := oauthConf.AuthCodeURL(models.Config.API.OAuthState, oauth2.AccessTypeOffline)
 
 		URL, err := url.Parse(base_url)
@@ -31,8 +30,7 @@ func GetAuthURLHandler(oauthConf *oauth2.Config) http.HandlerFunc {
 		URL.RawQuery = parameters.Encode()
 		base_url = URL.String()
 
-		resp["url"] = base_url
-		utils.JSON(w, http.StatusOK, resp)
+		http.Redirect(w, r, base_url, http.StatusFound)
 	}
 }
 
@@ -180,13 +178,10 @@ func IsAuthenticatedHandler(queries *db.Queries) http.HandlerFunc {
 			return
 		}
 
-    resp["is_admin"] = false
+		resp["is_admin"] = false
 
-		for _, email := range models.Config.API.AdminEmails {
-			if email == user.Email {
-				resp["is_admin"] = true
-				break
-			}
+		if utils.IsAdmin(user.Email) {
+			resp["is_admin"] = true
 		}
 
 		resp["is_authenticated"] = true

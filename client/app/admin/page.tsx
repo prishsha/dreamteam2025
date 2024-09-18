@@ -37,6 +37,7 @@ const AdminPage = () => {
     setModalText("Are you sure you want to start bidding?");
     setModalAction(() => () => {
       fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/game/start`, {
+        credentials: "include",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,6 +68,7 @@ const AdminPage = () => {
     setModalText(`Are you sure you want to assign ${gameState?.CurrentPlayerInBid?.name} to ${team.name} for ${humanizePrice(gameState!.CurrentBidAmount)} ?`);
     setModalAction(() => () => {
       fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/players/assign-team`, {
+        credentials: "include",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -91,24 +93,36 @@ const AdminPage = () => {
   }
 
   const handleBidIncrement = () => {
-    setModalText("Do you want to increment the bid?");
-    setModalAction(() => () => {
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/players/increment-bid`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((response) => {
-        if (response.ok) {
-          showToast("Bid incremented successfully", ToastType.SUCCESS)
-        } else {
-          showToast("Failed to increment bid", ToastType.ERROR)
-        }
-      }).catch((error) => {
-        showToast("Failed to increment bid: " + error, ToastType.ERROR)
-      });
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/players/increment-bid`, {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        showToast("Failed to increment bid", ToastType.ERROR)
+      }
+    }).catch((error) => {
+      showToast("Failed to increment bid: " + error, ToastType.ERROR)
     });
-    setIsModalOpen(true);
+  }
+
+
+  const handleBidDecrement = () => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/players/decrement-bid`, {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        showToast("Failed to decrement bid", ToastType.ERROR)
+      }
+    }).catch((error) => {
+      showToast("Failed to decrement bid: " + error, ToastType.ERROR)
+    });
   }
 
   useEffect(() => {
@@ -253,6 +267,12 @@ const AdminPage = () => {
                     className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg text-lg w-full"
                   >
                     Increment Player Bid
+                  </button>
+                  <button
+                    onClick={handleBidDecrement}
+                    className="bg-yellow-400 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg text-lg w-full"
+                  >
+                    Decrement Player Bid
                   </button>
                   <button
                     onClick={handleEndBidding}
