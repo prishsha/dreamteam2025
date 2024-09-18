@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS players (
     role VARCHAR(100) NOT NULL,
     rating INTEGER NOT NULL,
     base_price INTEGER NOT NULL,
-    avatar_url VARCHAR(300),
+    avatar_url TEXT,
     team_id INTEGER REFERENCES participant_teams(id),
     CHECK(role IN ('Batsman', 'Bowler', 'All Rounder', 'Wicket Keeper'))
 );

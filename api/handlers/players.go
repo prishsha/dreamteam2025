@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -125,14 +126,19 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.CurrentBidAmount)
 
 		nextPlayer, err := queries.GetPlayer(r.Context(), gameState.CurrentPlayerInBid.ID+1)
-		if err != nil {
-			resp["error"] = err.Error()
-			log.Error().Msg(err.Error())
-			utils.JSON(w, http.StatusInternalServerError, resp)
-			return
-		}
 
-		gameState.NextPlayerInBid = &nextPlayer
+		if err != nil {
+      if err == sql.ErrNoRows {
+				gameState.NextPlayerInBid = nil
+			} else {
+				resp["error"] = err.Error()
+				log.Error().Msg(err.Error())
+				utils.JSON(w, http.StatusInternalServerError, resp)
+				return
+			}
+		} else {
+			gameState.NextPlayerInBid = &nextPlayer
+		}
 
 		message := models.AssignMessage{
 			Type:              "assignPlayer",
