@@ -20,13 +20,26 @@ func (d *DatabaseConf) URI() string {
 }
 
 type APIConf struct {
-	Host            string   `mapstructure:"host"`
-	Port            string   `mapstructure:"port"`
+	Host         string   `mapstructure:"host"`
+	Port         string   `mapstructure:"port"`
+	JWTSecretKey string   `mapstructure:"jwt_secret"`
+	AdminIds     []string `mapstructure:"admin_ids"`
+	OAuthState   string   `mapstructure:"oauth_state"`
+	SessionKey   string   `mapstructure:"session_key"`
+	IsProd       bool   `mapstructure:"is_prod"`
+  FrontendURL  string   `mapstructure:"frontend_url"`
+}
+
+type GoogleOAuthConf struct {
+	ClientID     string `mapstructure:"client_id"`
+	ClientSecret string `mapstructure:"client_secret"`
+	RedirectURL  string `mapstructure:"redirect_url"`
 }
 
 type Configuration struct {
-	API      *APIConf      `mapstructure:"api"`
-	Database *DatabaseConf `mapstructure:"database"`
+	API         *APIConf         `mapstructure:"api"`
+	Database    *DatabaseConf    `mapstructure:"database"`
+	GoogleOAuth *GoogleOAuthConf `mapstructure:"google_oauth"`
 	// Logging     *Logging     `mapstructure:"logging"`
 }
 

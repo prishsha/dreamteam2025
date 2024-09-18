@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS google_tokens;
+DROP TABLE IF EXISTS users;

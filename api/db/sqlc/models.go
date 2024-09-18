@@ -6,7 +6,18 @@ package db
 
 import (
 	"database/sql"
+	"time"
 )
+
+type GoogleToken struct {
+	ID           int64     `json:"id"`
+	UserID       int64     `json:"userId"`
+	CreatedAt    time.Time `json:"createdAt"`
+	RefreshToken string    `json:"refreshToken"`
+	AccessToken  string    `json:"accessToken"`
+	ExpiresAt    time.Time `json:"expiresAt"`
+	TokenType    string    `json:"tokenType"`
+}
 
 type ParticipantTeam struct {
 	ID      int32  `json:"id"`
@@ -24,4 +35,13 @@ type Player struct {
 	AvatarUrl sql.NullString `json:"avatarUrl"`
 	TeamID    sql.NullInt32  `json:"teamId"`
 	IplTeam   sql.NullInt64  `json:"iplTeam"`
+}
+
+type User struct {
+	ID         int64  `json:"id"`
+	Email      string `json:"email"`
+	Name       string `json:"name"`
+	GivenName  string `json:"givenName"`
+	FamilyName string `json:"familyName"`
+	Picture    string `json:"picture"`
 }

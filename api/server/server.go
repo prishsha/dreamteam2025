@@ -16,6 +16,8 @@ import (
 	"github.com/milindmadhukar/dreamteam/utils"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 
 	db "github.com/milindmadhukar/dreamteam/db/sqlc"
 
@@ -29,6 +31,7 @@ type Server struct {
 	GameState     *models.GameState
 	ClientManager *models.ClientManager
 	Logger        zerolog.Logger
+	OauthConf     *oauth2.Config
 }
 
 func New() *Server {
@@ -45,6 +48,7 @@ func New() *Server {
 		log.Fatal().Msg(err.Error())
 	}
 
+	s.PrepareOauth2()
 	s.PrepareRouter()
 	s.InitalizeGameState()
 
@@ -107,10 +111,19 @@ func (s *Server) PrepareRouter() {
 	s.Router = r
 }
 
+func (s *Server) PrepareOauth2() {
+	s.OauthConf = &oauth2.Config{
+		RedirectURL:  models.Config.GoogleOAuth.RedirectURL,
+		ClientID:     models.Config.GoogleOAuth.ClientID,
+		ClientSecret: models.Config.GoogleOAuth.ClientSecret,
+		Scopes:       []string{"email", "profile"},
+		Endpoint:     google.Endpoint,
+	}
+}
+
 func (s *Server) InitalizeGameState() {
 
-
-  // TODO: Should I persist the game state in case of server shutdown?
+	// TODO: Should I persist the game state in case of server shutdown?
 
 	s.GameState = &models.GameState{
 		IsBiddingActive:    false,

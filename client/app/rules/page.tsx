@@ -7,7 +7,7 @@ const RulesPage: React.FC = () => {
         <div className="rounded-t-lg shadow-2xl overflow-hidden transform hover:scale-105 transition duration-300">
           <div className="bg-purple-800 py-6 px-8 border-b-4 border-purple-600">
             <h1 className="text-4xl font-extrabold text-white text-center animate-pulse">
-              Dream Team 5.0 Rulebook
+              Dream Team 6.0 Rulebook
             </h1>
           </div>
           
