@@ -4,9 +4,6 @@ import { humanizePrice } from '@/utils/humanize';
 import getTeamColours from '@/utils/teamColours';
 import Image from 'next/image';
 import RatingHolder from '@/assets/RatingHolder.svg';
-import Star from '@/assets/Star.svg';
-import HalfStar from '@/assets/HalfStar.svg';
-
 
 const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePrice, iplTeamName, avatarUrl }) => {
   const getBorder = () => {
