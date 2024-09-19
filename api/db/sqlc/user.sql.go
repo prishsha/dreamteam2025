@@ -11,9 +11,9 @@ import (
 
 const createOrUpdateUser = `-- name: CreateOrUpdateUser :one
 INSERT INTO users (
-  id, email, name, given_name, family_name, picture
+  email, name, given_name, family_name, picture
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5
 ) 
 ON CONFLICT (id) DO UPDATE
 SET email = $2, name = $3, given_name = $4, family_name = $5, picture = $6
@@ -21,22 +21,22 @@ RETURNING id, email, name, given_name, family_name, picture
 `
 
 type CreateOrUpdateUserParams struct {
-	ID         int64  `json:"id"`
 	Email      string `json:"email"`
 	Name       string `json:"name"`
 	GivenName  string `json:"givenName"`
 	FamilyName string `json:"familyName"`
 	Picture    string `json:"picture"`
+	Picture_2  string `json:"picture2"`
 }
 
 func (q *Queries) CreateOrUpdateUser(ctx context.Context, arg CreateOrUpdateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, createOrUpdateUser,
-		arg.ID,
 		arg.Email,
 		arg.Name,
 		arg.GivenName,
 		arg.FamilyName,
 		arg.Picture,
+		arg.Picture_2,
 	)
 	var i User
 	err := row.Scan(
