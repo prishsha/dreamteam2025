@@ -25,26 +25,6 @@ const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePri
     };
   };
 
-  const renderStars = (rating: number) => {
-    const fullStars = Math.floor(rating / 20);
-    const halfStar = rating % 20 >= 10;
-    return (
-      <div className="flex space-x-1">
-        {[...Array(5)].map((_, i) => (
-          <span key={i} className="w-4 h-4 relative">
-            {i < fullStars ? (
-              <Image src={Star} alt="Full Star" layout="fill" />
-            ) : i === fullStars && halfStar ? (
-              <Image src={HalfStar} alt="Half Star" layout="fill" />
-            ) : (
-              <Image src={Star} alt="Empty Star" layout="fill" className="opacity-30" />
-            )}
-          </span>
-        ))}
-      </div>
-    );
-  };
-
   return (
     <div key={id} className={`relative ${getBorder()} rounded-lg overflow-hidden shadow-lg border-4`} style={getGradient()}>
 
@@ -74,7 +54,7 @@ const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePri
           src={`${avatarUrl.String}`}
           alt={name}
           layout="fill"
-          objectFit="cover"
+          objectFit="contain"
           className="rounded-t-lg"
         />
       </div>
@@ -86,11 +66,11 @@ const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePri
           <div className="bg-violet-950 relative flex-grow w-3/4">
             <div className="w-full pr-2">
               <div className="mt-3 mb-4 relative z-10 flex flex-col items-center justify-center h-full">
-                <div className="mt-4">
-                  {renderStars(rating)}
+                <div className="mt-4 text-lg font-bold">
+                  {country.toUpperCase()}
                 </div>
-                <div className="mt-2">
-                  <span className="text-white font-bold text-3xl uppercase">{role}</span>
+                <div className="mt-1">
+                  <span className="text-white font-bold text-xl mx-2 uppercase">{role}</span>
                 </div>
               </div>
             </div>
