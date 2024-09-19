@@ -6,3 +6,4 @@ services:
     network_mode: host
     volumes:
       - ./configs/config.prod.yml:/app/configs/config.yml
+      - ./assets/:/app/assets
