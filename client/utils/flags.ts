@@ -18,6 +18,8 @@ const GetCountryFlagIcon = (country: string): string => {
       return 'https://hatscripts.github.io/circle-flags/flags/lk.svg';
     case 'India':
       return 'https://hatscripts.github.io/circle-flags/flags/in.svg';
+    case 'Zimbabwe':
+      return 'https://hatscripts.github.io/circle-flags/flags/zw.svg';
     default:
       return 'https://thumbs.dreamstime.com/b/cricket-ball-crown-king-icon-vector-logo-design-template-cricket-king-vector-logo-design-cricket-ball-crown-icon-design-245947496.jpg';
   }

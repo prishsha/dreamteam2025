@@ -63,7 +63,7 @@ const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePri
           <div className="bg-violet-950 relative flex-grow w-3/4">
             <div className="w-full pr-2">
               <div className="mt-3 mb-4 relative z-10 flex flex-col items-center justify-center h-full">
-                <div className="mt-4 text-lg font-bold">
+                <div className="mt-4 text-white text-lg font-bold">
                   {country.toUpperCase()}
                 </div>
                 <div className="mt-1">

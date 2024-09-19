@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const getAllParticipatingTeams = `-- name: GetAllParticipatingTeams :many
@@ -48,4 +49,64 @@ func (q *Queries) GetParticipatingTeam(ctx context.Context, id int32) (Participa
 	var i ParticipantTeam
 	err := row.Scan(&i.ID, &i.Name, &i.Balance)
 	return i, err
+}
+
+const getTeamPlayers = `-- name: GetTeamPlayers :many
+SELECT 
+    (SELECT pt.name 
+     FROM participant_teams pt 
+     JOIN users u ON u.participant_team_id = pt.id 
+     WHERE u.id = $1) AS iplTeamName,
+    p.id, p.name, p.country, p.role, p.rating, p.base_price, p.avatar_url, p.team_id, p.ipl_team
+FROM players p
+JOIN participant_teams pt ON p.team_id = pt.id
+JOIN users u ON u.participant_team_id = pt.id
+WHERE u.id = $1
+`
+
+type GetTeamPlayersRow struct {
+	Iplteamname string         `json:"iplteamname"`
+	ID          int32          `json:"id"`
+	Name        string         `json:"name"`
+	Country     string         `json:"country"`
+	Role        string         `json:"role"`
+	Rating      int32          `json:"rating"`
+	BasePrice   int32          `json:"basePrice"`
+	AvatarUrl   sql.NullString `json:"avatarUrl"`
+	TeamID      sql.NullInt32  `json:"teamId"`
+	IplTeam     sql.NullInt64  `json:"iplTeam"`
+}
+
+func (q *Queries) GetTeamPlayers(ctx context.Context, id int64) ([]GetTeamPlayersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTeamPlayers, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTeamPlayersRow
+	for rows.Next() {
+		var i GetTeamPlayersRow
+		if err := rows.Scan(
+			&i.Iplteamname,
+			&i.ID,
+			&i.Name,
+			&i.Country,
+			&i.Role,
+			&i.Rating,
+			&i.BasePrice,
+			&i.AvatarUrl,
+			&i.TeamID,
+			&i.IplTeam,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

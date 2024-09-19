@@ -17,7 +17,7 @@ INSERT INTO users (
 ) 
 ON CONFLICT (email) DO UPDATE
 SET name = $2, given_name = $3, family_name = $4, picture = $5
-RETURNING id, email, name, given_name, family_name, picture
+RETURNING id, email, name, given_name, family_name, picture, participant_team_id
 `
 
 type CreateOrUpdateUserParams struct {
@@ -44,12 +44,13 @@ func (q *Queries) CreateOrUpdateUser(ctx context.Context, arg CreateOrUpdateUser
 		&i.GivenName,
 		&i.FamilyName,
 		&i.Picture,
+		&i.ParticipantTeamID,
 	)
 	return i, err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, name, given_name, family_name, picture FROM users 
+SELECT id, email, name, given_name, family_name, picture, participant_team_id FROM users 
 WHERE id = $1
 LIMIT 1
 `
@@ -64,6 +65,7 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.GivenName,
 		&i.FamilyName,
 		&i.Picture,
+		&i.ParticipantTeamID,
 	)
 	return i, err
 }

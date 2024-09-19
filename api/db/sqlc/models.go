@@ -38,10 +38,11 @@ type Player struct {
 }
 
 type User struct {
-	ID         int64  `json:"id"`
-	Email      string `json:"email"`
-	Name       string `json:"name"`
-	GivenName  string `json:"givenName"`
-	FamilyName string `json:"familyName"`
-	Picture    string `json:"picture"`
+	ID                int64         `json:"id"`
+	Email             string        `json:"email"`
+	Name              string        `json:"name"`
+	GivenName         string        `json:"givenName"`
+	FamilyName        string        `json:"familyName"`
+	Picture           string        `json:"picture"`
+	ParticipantTeamID sql.NullInt32 `json:"participantTeamId"`
 }

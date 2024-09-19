@@ -18,6 +18,9 @@ export default function LandingPage() {
         <button onClick={() => router.push('/rules')} className="px-6 py-3 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition duration-300 text-xl font-bold">
           Rules
         </button>
+        <button onClick={() => router.push('/myteam')} className="px-6 py-3 bg-yellow-500 text-white rounded-lg shadow-lg hover:bg-yellow-600 transition duration-300 text-xl font-bold">
+          My Team
+        </button>
       </div>
     </div>
   );
