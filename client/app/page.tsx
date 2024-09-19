@@ -7,7 +7,6 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen">
-      <h1 className="text-3xl mb-8">This is the landing page</h1>
       <div className="flex space-x-4">
         <button onClick={() => router.push('/players')} className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-300 text-xl font-bold">
           All Players

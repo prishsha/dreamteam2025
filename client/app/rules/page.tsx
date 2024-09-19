@@ -23,10 +23,10 @@ const RulesPage: React.FC = () => {
 
             <Section title="Event and Evaluation Rules">
               <ul className="space-y-2 text-gray-300">
-                <ListItem>For teams with more than 11 players satisfying the criteria, the final 11 will be picked on the basis of higher rating in their respective roles.</ListItem>
+                <ListItem>For teams with more than 11 players satisfying the criteria, the final 11 will be picked on the basis of highest rating in their respective roles.</ListItem>
                 <ListItem>Winners will be declared on the basis of the total team points. In case of a tie, the team with the higher budget remaining is placed higher.</ListItem>
-                <ListItem>Exhaustion of budget before satisfying the cricket team criterias will lead to disqualification.</ListItem>
-                <ListItem>The top selected teams will be moving to the final round to be conducted on 24th September, 2023 at the same venue.</ListItem>
+                <ListItem>Exhaustion of budget before satisfying the cricket team criterias will lead to direct disqualification.</ListItem>
+                <ListItem>The top selected teams will be moving to the final round to be conducted on 22nd September, 2024 at the same venue.</ListItem>
               </ul>
             </Section>
 
@@ -43,12 +43,12 @@ const RulesPage: React.FC = () => {
 
             <Section title="Bidding Rules">
               <ul className="space-y-2 text-gray-300">
-                <ListItem>The Purse amount will be 60 crore.</ListItem>
+                <ListItem>The Purse amount will be 75 crore.</ListItem>
                 <ListItem>The bidding process will be initiated by the Auctioneer.</ListItem>
                 <ListItem>To place a bid, one member from a team is required to raise the placard only once.</ListItem>
                 <ListItem>Bid once placed can&apos;t be canceled.</ListItem>
                 <ListItem>The sale of a player will be declared by the auctioneer only.</ListItem>
-                <ListItem>For every sold player, the team moderator will be provided a stamped player receipt, which is to be kept safe till the final evaluation.</ListItem>
+                <ListItem>2 Warnings will be given by the auctioneer before selling the player.</ListItem>
                 <ListItem>Players will be sold to the team with the highest bid.</ListItem>
                 <ListItem>
                   The bid increments will be done in the following fashion:
@@ -62,10 +62,10 @@ const RulesPage: React.FC = () => {
                 </ListItem>
                 <ListItem>Each team will be issued a warning when their budget drops to 5 crore. Budget warning will be issued only once.</ListItem>
                 <ListItem>In case of dispute, the decision of the auctioneer will be final and binding.</ListItem>
-                <ListItem>A team placing a bid higher than their available budget will be disqualified.</ListItem>
+                <ListItem>A team placing a bid higher than their available budget will not be allowed to place a bid for the next five players.</ListItem>
               </ul>
             </Section>
-          </div>
+</div>
         </div>
       </div>
     </div>
