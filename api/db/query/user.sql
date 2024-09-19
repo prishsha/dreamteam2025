@@ -4,8 +4,8 @@ INSERT INTO users (
 ) VALUES (
   $1, $2, $3, $4, $5
 ) 
-ON CONFLICT (id) DO UPDATE
-SET email = $2, name = $3, given_name = $4, family_name = $5, picture = $6
+ON CONFLICT (email) DO UPDATE
+SET name = $3, given_name = $4, family_name = $5, picture = $6
 RETURNING * ;
 
 -- name: GetUser :one
