@@ -29,7 +29,7 @@ export default function PlayersPage() {
       Int64: number;
       Valid: boolean;
     }
-    iplTeamName: string;
+    iplteamname: string;
   }
 
 
@@ -59,8 +59,8 @@ export default function PlayersPage() {
           teamId: player.teamId,
           iplTeam: player.iplTeam,
           iplTeamName: {
-            String: player.iplTeamName,
-            Valid: player.iplTeamName !== "",
+            String: player.iplteamname,
+            Valid: player.iplteamname !== "",
           }
         }));
 
