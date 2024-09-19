@@ -16,7 +16,7 @@ INSERT INTO users (
   $1, $2, $3, $4, $5
 ) 
 ON CONFLICT (email) DO UPDATE
-SET name = $3, given_name = $4, family_name = $5, picture = $6
+SET name = $2, given_name = $3, family_name = $4, picture = $5
 RETURNING id, email, name, given_name, family_name, picture
 `
 
@@ -26,7 +26,6 @@ type CreateOrUpdateUserParams struct {
 	GivenName  string `json:"givenName"`
 	FamilyName string `json:"familyName"`
 	Picture    string `json:"picture"`
-	Picture_2  string `json:"picture2"`
 }
 
 func (q *Queries) CreateOrUpdateUser(ctx context.Context, arg CreateOrUpdateUserParams) (User, error) {
@@ -36,7 +35,6 @@ func (q *Queries) CreateOrUpdateUser(ctx context.Context, arg CreateOrUpdateUser
 		arg.GivenName,
 		arg.FamilyName,
 		arg.Picture,
-		arg.Picture_2,
 	)
 	var i User
 	err := row.Scan(
