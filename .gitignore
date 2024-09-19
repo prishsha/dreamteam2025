@@ -1,5 +1,5 @@
 api/bin
-api/configs/config.yml
+api/configs/*
 api/tmp
 api/app.log
 players.csv
