@@ -1,6 +1,5 @@
 "use client";
 
-import { Player, PlayerRole } from "@/types/player";
 import { useEffect, useState } from "react";
 import PlayerCard from "@/components/PlayerCard";
 import Spinner from "@/components/Spinner/Spinner";
