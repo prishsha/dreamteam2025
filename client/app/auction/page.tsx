@@ -41,6 +41,7 @@ export default function AuctionPage() {
 
       ws.onopen = () => {
         console.log('Connected to WebSocket');
+        console.log(socket)
         if (retryInterval) {
           clearInterval(retryInterval);
           retryInterval = null;
@@ -151,7 +152,7 @@ export default function AuctionPage() {
                 <Image src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/dreamteamsmall.png`} alt={gameState.CurrentPlayerInBid.country} layout="fill" objectFit="cover" className="hidden md:block" />
               </div>
             </div>
-            <h1 className="text-7xl font-bold mb-8 text-yellow-400">{gameState.CurrentPlayerInBid.country}</h1>
+            <h1 className="text-7xl font-bold mb-2 text-white">{gameState.CurrentPlayerInBid.country}</h1>
             <p className="text-5xl mb-8 text-green-400">{gameState.CurrentPlayerInBid.role}</p>
             <div className="bg-opacity-50 bg-black p-6 rounded-lg">
               <p className="text-7xl font-bold mb-4">Current Bid: <span className="text-green-400">₹{humanizePrice(gameState.CurrentBidAmount)}</span></p>
