@@ -92,22 +92,29 @@ export default function PlayersPage() {
           <Spinner />
         </div>
       ) : (
-        <div>
-          <div className="text-6xl text-center mb-4">My Team</div>
-          <div className="text-3xl text-center mb-6">Current Team Balance: {humanizePrice(teamBalance)}</div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-6 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <>
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-8 rounded-lg shadow-lg mb-8">
+            <h1 className="text-6xl font-bold text-center mb-4">My Team</h1>
+            <div className="text-5xl font-semibold text-center mb-6">
+              Current Team Balance: <span className="text-yellow-300">{humanizePrice(teamBalance)}</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {players?.map((player) => (
-              <div key={player.id} className="text-center m-1">
+              <div key={player.id} className="bg-white rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105">
                 <PlayerCard {...player} />
-                <div className="mt-2 text-lg font-semibold">
-                  Sold for: {humanizePrice(player.soldForAmount)}
+                <div className="bg-gray-100 p-4">
+                  <div className="text-lg font-semibold text-gray-800">
+                    Sold for: <span className="text-green-600">{humanizePrice(player.soldForAmount)}</span>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      )}
-    </div>
+        </>
+      )
+      }
+    </div >
   );
 }
 
