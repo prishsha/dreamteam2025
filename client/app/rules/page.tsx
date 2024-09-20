@@ -10,7 +10,7 @@ const RulesPage: React.FC = () => {
               Dream Team 6.0 Rulebook
             </h1>
           </div>
-          
+
           <div className="p-8 space-y-10">
             <Section title="Participating Rules">
               <ul className="space-y-2 text-gray-300">
@@ -26,7 +26,7 @@ const RulesPage: React.FC = () => {
                 <ListItem>For teams with more than 11 players satisfying the criteria, the final 11 will be picked on the basis of highest rating in their respective roles.</ListItem>
                 <ListItem>Winners will be declared on the basis of the total team points. In case of a tie, the team with the higher budget remaining is placed higher.</ListItem>
                 <ListItem>Exhaustion of budget before satisfying the cricket team criterias will lead to direct disqualification.</ListItem>
-                <ListItem>The top selected teams will be moving to the final round to be conducted on 22nd September, 2024 at the same venue.</ListItem>
+                <ListItem>The <b>Top 2</b> selected teams will be moving to the final round to be conducted on 22nd September, 2024 at the same venue.</ListItem>
               </ul>
             </Section>
 
@@ -65,7 +65,7 @@ const RulesPage: React.FC = () => {
                 <ListItem>A team placing a bid higher than their available budget will not be allowed to place a bid for the next five players.</ListItem>
               </ul>
             </Section>
-</div>
+          </div>
         </div>
       </div>
     </div>
