@@ -17,10 +17,15 @@ const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ teamStats }) =>
 
   return (
     <div className="rounded-lg bg-gray-900 p-4 pb-6">
-      {allCriteriaSatisfied && (
+      {allCriteriaSatisfied ? (
         <div className="text-2xl font-bold text-green-500 mb-4">
           ✅ All criteria satisfied
           <p className="text-lg font-normal mt-2">Your team has satisfied all criteria!</p>
+        </div>
+      ) : (
+        <div className="text-2xl font-bold text-red-500 mb-4">
+          ❌ Not all criteria satisfied
+          <p className="text-lg font-normal mt-2">Your team does not meet all requirements!</p>
         </div>
       )}
       <div>
