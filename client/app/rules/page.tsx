@@ -2,10 +2,10 @@ import React from 'react';
 
 const RulesPage: React.FC = () => {
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen py-12 px-1 sm:px-6 lg:px-8">
+      <div className="mx-auto">
         <div className="rounded-t-lg shadow-2xl overflow-hidden transform hover:scale-105 transition duration-300">
-          <div className="bg-purple-800 py-6 px-8 border-b-4 border-purple-600">
+          <div className="bg-purple-800 py-6 px-2 border-b-4 border-purple-600">
             <h1 className="text-4xl font-extrabold text-white text-center animate-pulse">
               Dream Team 6.0 Rulebook
             </h1>

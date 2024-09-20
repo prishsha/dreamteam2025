@@ -18,11 +18,11 @@ const EligibilityChecker: React.FC<EligibilityCheckerProps> = ({ teamStats }) =>
       {allCriteriaSatisfied ? (
         <div className="text-2xl font-bold text-green-500">
           ✅ All criteria satisfied
-          <p className="text-lg font-normal mt-2">Your team has satisfied all criterias!</p>
+          <p className="text-lg font-normal mt-2">Your team has satisfied all criteria!</p>
         </div>
       ) : (
         <div>
-          <p className="text-xl font-bold text-red-500 mb-4">Your team is not satisfying all criterias</p>
+          <p className="text-xl font-bold text-red-500 mb-4">Your team does not satisfy all criteria</p>
           <div className={`flex items-center ${teamStats?.bowlerCountSatisfied ? 'text-green-500' : 'text-red-500'}`}>
             {teamStats?.bowlerCountSatisfied ? '✅' : '❌'} Minimum 4 bowlers
           </div>
