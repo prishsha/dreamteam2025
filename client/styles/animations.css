@@ -1,0 +1,35 @@
+@keyframes stampAnimation {
+  0% {
+    transform: scale(3) rotate(-15deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.5) rotate(5deg);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.9) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.animate-stamp {
+  animation: stampAnimation 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+@keyframes modalAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-modal {
+  animation: modalAppear 0.3s ease-out forwards;
+}

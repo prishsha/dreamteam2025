@@ -4,16 +4,23 @@ import { GameState } from "@/types/game";
 import { AssignPlayerMessage, ServerMessage, UnsoldPlayerMessage } from "@/types/server";
 import { humanizePrice } from "@/utils/humanize";
 import getTeamColours, { TeamColours } from "@/utils/teamColours";
-import { showToast, ToastType } from "@/utils/toast";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import RatingHolder from '@/assets/RatingHolder.svg';
 import GetCountryFlagIcon from "@/utils/flags";
+import Confetti from 'react-confetti';
+import AssignModal from '@/components/AssignModal';
+import UnsoldModal from '@/components/UnsoldModal';
+import '@/styles/animations.css';
 
 export default function AuctionPage() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [teamColour, setTeamColour] = useState<TeamColours>();
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showUnsoldModal, setShowUnsoldModal] = useState(false);
+  const [assignInfo, setAssignInfo] = useState<AssignPlayerMessage | null>(null);
+  const [unsoldInfo, setUnsoldInfo] = useState<UnsoldPlayerMessage | null>(null);
 
   const getGradient = () => {
     return {
@@ -33,7 +40,6 @@ export default function AuctionPage() {
       ws = new WebSocket(`${wsProtocol}://${wsUrl}/game/ws`);
 
       ws.onopen = () => {
-        console.log(socket)
         console.log('Connected to WebSocket');
         if (retryInterval) {
           clearInterval(retryInterval);
@@ -52,12 +58,15 @@ export default function AuctionPage() {
             const unsoldPlayerMessage: UnsoldPlayerMessage = serverMessage.message;
 
             if (assignPlayerMessage.type === "assignPlayer") {
-              // TODO: Maybe show a modal for 3 seconds with confetti.
-              showToast(`${assignPlayerMessage.player.name} has been assigned to ${assignPlayerMessage.participatingTeam.name} for ${humanizePrice(assignPlayerMessage.bidAmount)}!`, ToastType.SUCCESS);
+              setAssignInfo(assignPlayerMessage);
+              setShowAssignModal(true);
+              setTimeout(() => setShowAssignModal(false), 5000);
             }
 
-            if (assignPlayerMessage.type === "unsoldPlayer") {
-              showToast(`${unsoldPlayerMessage.player.name} went unsold!`, ToastType.WARNING);
+            if (unsoldPlayerMessage.type === "unsoldPlayer") {
+              setUnsoldInfo(unsoldPlayerMessage);
+              setShowUnsoldModal(true);
+              setTimeout(() => setShowUnsoldModal(false), 5000);
             }
           }
 
@@ -95,6 +104,7 @@ export default function AuctionPage() {
       }
     };
   }, []);
+
   return (
     <div className="min-h-screen text-white p-8 flex flex-col items-center justify-center" style={getGradient()}>
       {gameState?.IsBiddingActive && gameState.CurrentPlayerInBid ? (
@@ -152,6 +162,20 @@ export default function AuctionPage() {
       ) : (
         <p className="text-4xl font-bold">Waiting for the auction to start...</p>
       )}
+
+      <AssignModal
+        isOpen={showAssignModal}
+        onClose={() => setShowAssignModal(false)}
+        assignInfo={assignInfo}
+      />
+
+      <UnsoldModal
+        isOpen={showUnsoldModal}
+        onClose={() => setShowUnsoldModal(false)}
+        unsoldInfo={unsoldInfo}
+      />
+
+      {showAssignModal && <Confetti />}
     </div>
   );
 }
