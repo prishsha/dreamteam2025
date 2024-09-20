@@ -28,4 +28,6 @@ export interface Player {
     String: string;
     Valid: boolean;
   }
+  isUnsold: boolean;
+  soldForAmount: number;
 }

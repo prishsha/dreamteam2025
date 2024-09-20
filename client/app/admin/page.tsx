@@ -300,7 +300,11 @@ const AdminPage = () => {
                 <button
                   key={team.id}
                   onClick={() => assignPlayerToTeam(team)}
-                  className="bg-gray-200 hover:bg-gray-300 p-2 rounded-lg flex flex-col items-center justify-center"
+                  className={`p-2 rounded-lg flex flex-col items-center justify-center ${team.balance < (gameState?.CurrentBidAmount || 0)
+                    ? 'bg-red-500 cursor-not-allowed'
+                    : 'bg-gray-200 hover:bg-gray-300'
+                    }`}
+                  disabled={team.balance < (gameState?.CurrentBidAmount || 0)}
                 >
                   <Image
                     src={TeamLogos(team.name)}
@@ -316,16 +320,16 @@ const AdminPage = () => {
             </div>
           </div>
         </div>
+        <ConfirmationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={() => {
+            modalAction();
+            setIsModalOpen(false);
+          }}
+          text={modalText}
+        />
       </div>
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={() => {
-          modalAction();
-          setIsModalOpen(false);
-        }}
-        text={modalText}
-      />
     </div>
   );
 }

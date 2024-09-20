@@ -33,7 +33,7 @@ func (s *Server) HandleRoutes(mainRouter *chi.Mux) {
 	mainRouter.Get("/auth/logout", handlers.LogoutHandler())
 	mainRouter.Get("/auth/is-authenticated", handlers.IsAuthenticatedHandler(s.Queries))
 
-  mainRouter.Get("/users/team", handlers.GetUserteamPlayers(s.Queries))
+  mainRouter.Get("/user/team", handlers.GetUserteamPlayers(s.Queries))
 
 	fileRouter := chi.NewRouter()
 	handlers.FileServer(fileRouter, "/", http.Dir("./assets/"))

@@ -117,7 +117,6 @@ SELECT
     players.base_price,
     players.avatar_url,
     players.team_id,
-    players.ipl_team,
     participant_teams.name AS ipl_team_name
 FROM 
     players
@@ -136,7 +135,6 @@ type GetPlayerRow struct {
 	BasePrice   int32          `json:"basePrice"`
 	AvatarUrl   sql.NullString `json:"avatarUrl"`
 	TeamID      sql.NullInt32  `json:"teamId"`
-	IplTeam     sql.NullInt64  `json:"iplTeam"`
 	IplTeamName sql.NullString `json:"iplTeamName"`
 }
 
@@ -152,7 +150,6 @@ func (q *Queries) GetPlayer(ctx context.Context, id int32) (GetPlayerRow, error)
 		&i.BasePrice,
 		&i.AvatarUrl,
 		&i.TeamID,
-		&i.IplTeam,
 		&i.IplTeamName,
 	)
 	return i, err
