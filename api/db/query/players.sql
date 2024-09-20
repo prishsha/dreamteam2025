@@ -16,6 +16,28 @@ LEFT JOIN
 WHERE players.id = $1
 LIMIT 1;
 
+-- name: GetRandomAvailablePlayer :one
+SELECT 
+    players.id,
+    players.name,
+    players.country,
+    players.role,
+    players.rating,
+    players.base_price,
+    players.avatar_url,
+    players.team_id,
+    participant_teams.name AS ipl_team_name
+FROM 
+    players
+LEFT JOIN 
+    participant_teams ON players.ipl_team = participant_teams.id
+WHERE 
+    players.team_id IS NULL
+    AND players.is_unsold = FALSE
+ORDER BY 
+    RANDOM()
+LIMIT 1;
+
 -- name: GetAllPlayers :many
 SELECT 
     players.id,

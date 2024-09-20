@@ -79,7 +79,7 @@ func StartBidding(queries *db.Queries, clientManger *models.ClientManager, gameS
 		gameState.IsBiddingActive = true
 
 		// NOTE: idk the order as of now so just fetching the first id.
-		firstPlayer, err := queries.GetPlayer(r.Context(), 1)
+		firstPlayer, err := queries.GetRandomAvailablePlayer(r.Context())
 		if err != nil {
 			resp["error"] = err.Error()
 			log.Error().Msg(err.Error())
@@ -87,7 +87,7 @@ func StartBidding(queries *db.Queries, clientManger *models.ClientManager, gameS
 			return
 		}
 
-		nextPlayer, err := queries.GetPlayer(r.Context(), firstPlayer.ID+1)
+		nextPlayer, err := queries.GetRandomAvailablePlayer(r.Context())
 		if err != nil {
 			resp["error"] = err.Error()
 			log.Error().Msg(err.Error())

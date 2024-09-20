@@ -123,12 +123,12 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 
 		gameState.CurrentPlayerInBid = gameState.NextPlayerInBid
 		gameState.CurrentBidAmount = gameState.NextPlayerInBid.BasePrice
-		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.CurrentBidAmount)
+		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.NextPlayerInBid.BasePrice)
 
-		nextPlayer, err := queries.GetPlayer(r.Context(), gameState.CurrentPlayerInBid.ID+1)
+		nextPlayer, err := queries.GetRandomAvailablePlayer(r.Context())
 
 		if err != nil {
-      if err == sql.ErrNoRows {
+			if err == sql.ErrNoRows {
 				gameState.NextPlayerInBid = nil
 			} else {
 				resp["error"] = err.Error()
@@ -245,6 +245,13 @@ func DecrementBidAmount(queries *db.Queries, clientManager *models.ClientManager
 		if gameState.CurrentPlayerInBid == nil || !gameState.IsBiddingActive || gameState.IsFinished {
 			resp["error"] = "No active bid"
 			log.Error().Msg("No active bid")
+			utils.JSON(w, http.StatusBadRequest, resp)
+			return
+		}
+
+		if utils.CalculatePreviousBidAmount(gameState.CurrentBidAmount) < 0 {
+			resp["error"] = "Minimum bid amount reached"
+			log.Error().Msg("Minimum bid amount reached")
 			utils.JSON(w, http.StatusBadRequest, resp)
 			return
 		}

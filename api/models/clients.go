@@ -12,7 +12,7 @@ import (
 type AssignMessage struct {
   Type string `json:"type"`
   ParticipatingTeam db.ParticipantTeam `json:"participatingTeam"`
-  Player db.GetPlayerRow `json:"player"`
+  Player db.GetRandomAvailablePlayerRow `json:"player"`
   BidAmount int `json:"bidAmount"`
 }
 

@@ -53,10 +53,12 @@ func (q *Queries) GetParticipatingTeam(ctx context.Context, id int32) (Participa
 
 const getTeamPlayers = `-- name: GetTeamPlayers :many
 SELECT 
-    (SELECT pt.name 
+    (
+      SELECT pt.name 
      FROM participant_teams pt 
      JOIN users u ON u.participant_team_id = pt.id 
-     WHERE u.id = $1) AS ipl_team_name,
+     WHERE u.id = $1
+    ) AS ipl_team_name,
     pt.balance AS team_balance,
     p.id, p.name, p.country, p.role, p.rating, p.base_price, p.avatar_url, p.team_id, p.ipl_team, p.is_unsold, p.sold_for_amount
 FROM players p

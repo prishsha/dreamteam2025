@@ -154,3 +154,55 @@ func (q *Queries) GetPlayer(ctx context.Context, id int32) (GetPlayerRow, error)
 	)
 	return i, err
 }
+
+const getRandomAvailablePlayer = `-- name: GetRandomAvailablePlayer :one
+SELECT 
+    players.id,
+    players.name,
+    players.country,
+    players.role,
+    players.rating,
+    players.base_price,
+    players.avatar_url,
+    players.team_id,
+    participant_teams.name AS ipl_team_name
+FROM 
+    players
+LEFT JOIN 
+    participant_teams ON players.ipl_team = participant_teams.id
+WHERE 
+    players.team_id IS NULL
+    AND players.is_unsold = FALSE
+ORDER BY 
+    RANDOM()
+LIMIT 1
+`
+
+type GetRandomAvailablePlayerRow struct {
+	ID          int32          `json:"id"`
+	Name        string         `json:"name"`
+	Country     string         `json:"country"`
+	Role        string         `json:"role"`
+	Rating      int32          `json:"rating"`
+	BasePrice   int32          `json:"basePrice"`
+	AvatarUrl   sql.NullString `json:"avatarUrl"`
+	TeamID      sql.NullInt32  `json:"teamId"`
+	IplTeamName sql.NullString `json:"iplTeamName"`
+}
+
+func (q *Queries) GetRandomAvailablePlayer(ctx context.Context) (GetRandomAvailablePlayerRow, error) {
+	row := q.db.QueryRowContext(ctx, getRandomAvailablePlayer)
+	var i GetRandomAvailablePlayerRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Country,
+		&i.Role,
+		&i.Rating,
+		&i.BasePrice,
+		&i.AvatarUrl,
+		&i.TeamID,
+		&i.IplTeamName,
+	)
+	return i, err
+}
