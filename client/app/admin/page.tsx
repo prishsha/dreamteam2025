@@ -23,7 +23,9 @@ const AdminPage = () => {
   const [modalAction, setModalAction] = useState<() => void>(() => { });
 
   const fetchTeamData = () => {
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/participatingteam/all`)
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/participatingteam/all`, {
+      credentials: "include",
+    })
       .then((response) => response.json())
       .then((data) => {
         setParticipatingTeams(data);

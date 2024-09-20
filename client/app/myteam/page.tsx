@@ -6,37 +6,14 @@ import PlayerCard from "@/components/PlayerCard";
 import Spinner from "@/components/Spinner/Spinner";
 import { showToast, ToastType } from "@/utils/toast";
 import { humanizePrice } from "@/utils/humanize";
+import { MyTeamPlayer, MyTeamPlayerResponse, MyTeamStats } from "@/types/teams";
+import EligibilityChecker from "@/components/EligibilityChecker";
 export default function PlayersPage() {
 
   const [players, setPlayers] = useState<Player[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [teamBalance, setTeamBalance] = useState(0);
-
-  type MyTeamPlayer = {
-    id: number;
-    name: string;
-    country: string;
-    role: PlayerRole;
-    rating: number;
-    basePrice: number;
-    avatarUrl: {
-      String: string;
-      Valid: boolean;
-    }
-    teamId: {
-      Int64: number;
-      Valid: boolean;
-    }
-    iplTeam: {
-      Int64: number;
-      Valid: boolean;
-    }
-    iplTeamName: string;
-    teamBalance: number;
-    isUnsold: boolean;
-    soldForAmount: number;
-  }
-
+  const [teamStats, setTeamStats] = useState<MyTeamStats>();
 
   useEffect(() => {
     setIsLoading(true);
@@ -52,11 +29,24 @@ export default function PlayersPage() {
         }
         return res.json();
       })
-      .then((data: MyTeamPlayer[]) => {
-        const teamBalance = data[0].teamBalance;
+      .then((data: MyTeamPlayerResponse) => {
+        const teamBalance = data.players[0].teamBalance;
         setTeamBalance(teamBalance);
 
-        const newData: Player[] = data.map((player: MyTeamPlayer) => ({
+        setTeamStats({
+          bowlerCount: data.bowlerCount,
+          batsmanCount: data.batsmanCount,
+          allRounderCount: data.allRounderCount,
+          wicketKeeperCount: data.wicketKeeperCount,
+          internationalCount: data.internationalCount,
+          bowlerCountSatisfied: data.bowlerCountSatisfied,
+          batsmanCountSatisfied: data.batsmanCountSatisfied,
+          allRounderCountSatisfied: data.allRounderCountSatisfied,
+          wicketKeeperCountSatisfied: data.wicketKeeperCountSatisfied,
+          internationalCountSatisfied: data.internationalCountSatisfied
+        });
+
+        const newData: Player[] = data.players.map((player: MyTeamPlayer) => ({
           id: player.id,
           name: player.name,
           country: player.country,
@@ -99,7 +89,8 @@ export default function PlayersPage() {
               Current Team Balance: <span className="text-yellow-300">{humanizePrice(teamBalance)}</span>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <EligibilityChecker teamStats={teamStats} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
             {players?.map((player) => (
               <div key={player.id} className="bg-white rounded-lg shadow-md overflow-hidden transform transition-transform hover:scale-105">
                 <PlayerCard {...player} />

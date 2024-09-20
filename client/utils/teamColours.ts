@@ -30,7 +30,7 @@ const getTeamColours = (team: string): TeamColours => {
     case 'Rajasthan Royals':
       return { start: '#DF026F', end: '#FF8A9E' };
     default:
-      return { start: '#0000f0', end: '#ffffbf' };
+      return { start: '#1a1a2e', end: '#16213e' };
   }
 }
 
