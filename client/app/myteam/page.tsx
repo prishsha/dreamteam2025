@@ -18,7 +18,7 @@ export default function PlayersPage() {
   useEffect(() => {
     setIsLoading(true);
 
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/team`, {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/team/`, {
       credentials: "include",
     })
       .then((res) => {
