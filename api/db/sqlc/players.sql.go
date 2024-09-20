@@ -62,7 +62,7 @@ FROM
 LEFT JOIN 
     participant_teams ON players.ipl_team = participant_teams.id
 ORDER BY 
-    players.id
+    RANDOM()
 LIMIT $1 OFFSET $2
 `
 

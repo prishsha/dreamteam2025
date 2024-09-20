@@ -32,19 +32,27 @@ export interface MyTeamPlayer {
 }
 
 
-  export interface MyTeamStats {
-    bowlerCount: number;
-    batsmanCount: number;
-    allRounderCount: number;
-    wicketKeeperCount: number;
-    internationalCount: number;
-    bowlerCountSatisfied: boolean;
-    batsmanCountSatisfied: boolean;
-    allRounderCountSatisfied: boolean;
-    wicketKeeperCountSatisfied: boolean;
-    internationalCountSatisfied: boolean;
-  }
+export interface MyTeamStats {
+  bowlerCount: number;
+  batsmanCount: number;
+  allRounderCount: number;
+  wicketKeeperCount: number;
+  internationalCount: number;
+  bowlerCountSatisfied: boolean;
+  batsmanCountSatisfied: boolean;
+  allRounderCountSatisfied: boolean;
+  wicketKeeperCountSatisfied: boolean;
+  internationalCountSatisfied: boolean;
+}
 
-  export interface MyTeamPlayerResponse extends MyTeamStats {
-    players: MyTeamPlayer[];
-  }
+
+export interface AllTeamPlayerResponse extends MyTeamStats {
+  teamId: number;
+  teamBalance: number;
+  teamName: string;
+  players: MyTeamPlayer[];
+}
+
+export interface MyTeamPlayerResponse extends MyTeamStats {
+  players: MyTeamPlayer[];
+}

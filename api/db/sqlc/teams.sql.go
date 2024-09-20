@@ -38,6 +38,72 @@ func (q *Queries) GetAllParticipatingTeams(ctx context.Context) ([]ParticipantTe
 	return items, nil
 }
 
+const getAllTeamPlayers = `-- name: GetAllTeamPlayers :many
+SELECT 
+    pt.id AS team_id,
+    pt.name AS ipl_team_name,
+    pt.balance AS team_balance,
+    p.id, p.name, p.country, p.role, p.rating, p.base_price, p.avatar_url, p.team_id, p.ipl_team, p.is_unsold, p.sold_for_amount
+FROM participant_teams pt
+LEFT JOIN players p ON p.team_id = pt.id
+ORDER BY pt.id, p.id
+`
+
+type GetAllTeamPlayersRow struct {
+	TeamID        int32          `json:"teamId"`
+	IplTeamName   string         `json:"iplTeamName"`
+	TeamBalance   int32          `json:"teamBalance"`
+	ID            sql.NullInt32  `json:"id"`
+	Name          sql.NullString `json:"name"`
+	Country       sql.NullString `json:"country"`
+	Role          sql.NullString `json:"role"`
+	Rating        sql.NullInt32  `json:"rating"`
+	BasePrice     sql.NullInt32  `json:"basePrice"`
+	AvatarUrl     sql.NullString `json:"avatarUrl"`
+	TeamID_2      sql.NullInt32  `json:"teamId2"`
+	IplTeam       sql.NullInt64  `json:"iplTeam"`
+	IsUnsold      sql.NullBool   `json:"isUnsold"`
+	SoldForAmount sql.NullInt32  `json:"soldForAmount"`
+}
+
+func (q *Queries) GetAllTeamPlayers(ctx context.Context) ([]GetAllTeamPlayersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllTeamPlayers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllTeamPlayersRow
+	for rows.Next() {
+		var i GetAllTeamPlayersRow
+		if err := rows.Scan(
+			&i.TeamID,
+			&i.IplTeamName,
+			&i.TeamBalance,
+			&i.ID,
+			&i.Name,
+			&i.Country,
+			&i.Role,
+			&i.Rating,
+			&i.BasePrice,
+			&i.AvatarUrl,
+			&i.TeamID_2,
+			&i.IplTeam,
+			&i.IsUnsold,
+			&i.SoldForAmount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getParticipatingTeam = `-- name: GetParticipatingTeam :one
 SELECT id, name, balance FROM participant_teams
 WHERE id = $1

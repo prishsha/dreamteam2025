@@ -21,3 +21,13 @@ FROM players p
 JOIN participant_teams pt ON p.team_id = pt.id
 JOIN users u ON u.participant_team_id = pt.id
 WHERE u.id = $1;
+
+-- name: GetAllTeamPlayers :many
+SELECT 
+    pt.id AS team_id,
+    pt.name AS ipl_team_name,
+    pt.balance AS team_balance,
+    p.*
+FROM participant_teams pt
+LEFT JOIN players p ON p.team_id = pt.id
+ORDER BY pt.id, p.id;
