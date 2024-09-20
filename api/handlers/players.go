@@ -159,6 +159,92 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 	}
 }
 
+func AssignUnsoldToPlayers(queries *db.Queries, clientManager *models.ClientManager, gameState *models.GameState) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var resp map[string]interface{} = make(map[string]interface{})
+
+		jwtTokenCookie, err := r.Cookie("token")
+
+		if err != nil {
+			resp["error"] = "No token found"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		userId, errMsg, status := utils.GetUserIdFromJWT(jwtTokenCookie.Value)
+		if errMsg != "" {
+			resp["error"] = errMsg
+			utils.JSON(w, status, resp)
+			return
+		}
+
+		dbUser, err := queries.GetUser(r.Context(), userId)
+		if err != nil {
+			resp["error"] = err.Error()
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
+
+		if !utils.IsAdmin(dbUser.Email) {
+			resp["error"] = "Unauthorized"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		if gameState.CurrentPlayerInBid == nil || !gameState.IsBiddingActive || gameState.IsFinished {
+			resp["error"] = "No active bid"
+			log.Error().Msg("No active bid")
+			utils.JSON(w, http.StatusBadRequest, resp)
+			return
+		}
+
+		currentPlayer := gameState.CurrentPlayerInBid
+
+    err = queries.AssignUnsoldToPlayer(r.Context(), currentPlayer.ID)
+
+    if err != nil {
+      resp["error"] = err.Error()
+      log.Error().Msg(err.Error())
+      utils.JSON(w, http.StatusInternalServerError, resp)
+      return
+    }
+
+		gameState.CurrentPlayerInBid = gameState.NextPlayerInBid
+		gameState.CurrentBidAmount = gameState.NextPlayerInBid.BasePrice
+		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.NextPlayerInBid.BasePrice)
+
+		nextPlayer, err := queries.GetRandomAvailablePlayer(r.Context())
+
+		if err != nil {
+			if err == sql.ErrNoRows {
+				gameState.NextPlayerInBid = nil
+			} else {
+				resp["error"] = err.Error()
+				log.Error().Msg(err.Error())
+				utils.JSON(w, http.StatusInternalServerError, resp)
+				return
+			}
+		} else {
+			gameState.NextPlayerInBid = &nextPlayer
+		}
+
+		message := models.UnsoldMessage{
+      Type:   "unsoldPlayer",
+      Player: *currentPlayer,
+    }
+
+		jsonData, err := json.Marshal(message)
+
+		clientManager.Broadcast <- &models.ServerMessage{
+			Message:   jsonData,
+			GameState: gameState,
+		}
+
+		utils.JSON(w, http.StatusOK, resp)
+		return
+	}
+}
+
 func IncrementBidAmount(queries *db.Queries, clientManager *models.ClientManager, gameState *models.GameState) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var resp map[string]interface{} = make(map[string]interface{})

@@ -92,6 +92,31 @@ const AdminPage = () => {
     setIsModalOpen(true);
   }
 
+  const assignUnsoldToPlayer = async () => {
+    setModalText(`Are you sure you want to assign unsold player to ${gameState?.CurrentPlayerInBid?.name} ?`);
+    setModalAction(() => () => {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/players/unsold`, {
+        credentials: "include",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((response) => {
+        if (response.ok) {
+          fetchTeamData();
+          showToast(`${gameState?.CurrentPlayerInBid?.name} went unsold`, ToastType.SUCCESS)
+        } else {
+          response.json().then((data) => {
+            showToast("Failed to assign unsold to player: " + data.error, ToastType.ERROR)
+          });
+        }
+      }).catch((error) => {
+        showToast("Failed to assign unsold to player: " + error, ToastType.ERROR)
+      });
+    })
+    setIsModalOpen(true);
+  }
+
   const handleBidIncrement = () => {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/players/increment-bid`, {
       credentials: "include",
@@ -280,6 +305,14 @@ const AdminPage = () => {
                   >
                     End Bidding
                   </button>
+
+                  <button
+                    onClick={() => assignUnsoldToPlayer()}
+                    className="bg-gray-600 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-lg text-lg w-full"
+                  >
+                    Set Unsold
+                  </button>
+                  
                 </div>
               </>
             ) : (

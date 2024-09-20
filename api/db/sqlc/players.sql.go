@@ -34,6 +34,17 @@ func (q *Queries) AssignTeamToPlayer(ctx context.Context, arg AssignTeamToPlayer
 	return err
 }
 
+const assignUnsoldToPlayer = `-- name: AssignUnsoldToPlayer :exec
+UPDATE players
+SET team_id = NULL, sold_for_amount = 0, is_unsold = TRUE
+WHERE players.id = $1
+`
+
+func (q *Queries) AssignUnsoldToPlayer(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, assignUnsoldToPlayer, id)
+	return err
+}
+
 const getAllPlayers = `-- name: GetAllPlayers :many
 SELECT 
     players.id,

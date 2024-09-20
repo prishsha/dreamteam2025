@@ -16,3 +16,10 @@ export interface AssignPlayerMessage {
   player: Player;
   bidAmount: number;
 }
+
+
+export interface UnsoldPlayerMessage {
+  unsoldPlayerMessage(playerName: any): unknown;
+  type: string;
+  player: Player;
+}

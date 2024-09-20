@@ -69,3 +69,8 @@ UPDATE participant_teams
 SET balance = balance - $2
 WHERE participant_teams.id = $1
     AND EXISTS (SELECT 1 FROM player_update);
+
+-- name: AssignUnsoldToPlayer :exec
+UPDATE players
+SET team_id = NULL, sold_for_amount = 0, is_unsold = TRUE
+WHERE players.id = $1;

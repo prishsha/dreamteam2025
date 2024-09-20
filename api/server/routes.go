@@ -19,6 +19,7 @@ func (s *Server) HandleRoutes(mainRouter *chi.Mux) {
 
 	mainRouter.Get("/players/all", handlers.GetAllPlayers(s.Queries))
 	mainRouter.Post("/players/assign-team", handlers.AssignTeamToPlayer(s.Queries, s.ClientManager, s.GameState))
+  mainRouter.Post("/players/unsold", handlers.AssignUnsoldToPlayers(s.Queries, s.ClientManager, s.GameState))
 	mainRouter.Post("/players/increment-bid", handlers.IncrementBidAmount(s.Queries, s.ClientManager, s.GameState))
 	mainRouter.Post("/players/decrement-bid", handlers.DecrementBidAmount(s.Queries, s.ClientManager, s.GameState))
 

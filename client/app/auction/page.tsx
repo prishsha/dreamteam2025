@@ -1,7 +1,7 @@
 "use client";
 
 import { GameState } from "@/types/game";
-import { AssignPlayerMessage, ServerMessage } from "@/types/server";
+import { AssignPlayerMessage, ServerMessage, UnsoldPlayerMessage } from "@/types/server";
 import { humanizePrice } from "@/utils/humanize";
 import getTeamColours, { TeamColours } from "@/utils/teamColours";
 import { showToast, ToastType } from "@/utils/toast";
@@ -47,10 +47,16 @@ export default function AuctionPage() {
           if (serverMessage.message) {
             // @ts-expect-error: We're not checking for the message type here.
             const assignPlayerMessage: AssignPlayerMessage = serverMessage.message;
-            if (assignPlayerMessage.type === "assignPlayer") {
+            // @ts-expect-error: We're not checking for the message type here
+            const unsoldPlayerMessage: UnsoldPlayerMessage = serverMessage.message;
 
+            if (assignPlayerMessage.type === "assignPlayer") {
               // TODO: Maybe show a modal for 3 seconds with confetti.
               showToast(`${assignPlayerMessage.player.name} has been assigned to ${assignPlayerMessage.participatingTeam.name} for ${humanizePrice(assignPlayerMessage.bidAmount)}!`, ToastType.SUCCESS);
+            }
+
+            if(assignPlayerMessage.type === "unsoldPlayer") {
+              showToast(`${unsoldPlayerMessage.player.name} went unsold!`, ToastType.WARNING);
             }
           }
 
