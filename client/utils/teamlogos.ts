@@ -24,6 +24,10 @@ const TeamLogos = (team: string) => {
       return 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a6/HyderabadDeccanChargers.png/200px-HyderabadDeccanChargers.png';
     case 'Rising Pune Supergiant':
       return 'https://www.pngall.com/wp-content/uploads/2017/04/Rising-Pune-Supergiants-Logo-PNG.png'
+    case 'Kochi Tuskers Kerala':
+      return 'https://upload.wikimedia.org/wikipedia/en/thumb/9/96/Kochi_Tuskers_Kerala_Logo.svg/1200px-Kochi_Tuskers_Kerala_Logo.svg.png'
+    case 'Gujarat Lions':
+      return 'https://upload.wikimedia.org/wikipedia/en/c/c4/Gujarat_Lions.png'
     default:
       return '';
   }
