@@ -8,7 +8,6 @@ SELECT
     players.base_price,
     players.avatar_url,
     players.team_id,
-    players.ipl_team,
     participant_teams.name AS ipl_team_name
 FROM 
     players
@@ -40,11 +39,11 @@ LIMIT $1 OFFSET $2;
 -- name: AssignTeamToPlayer :exec
 WITH player_update AS (
     UPDATE players
-    SET team_id = $1
-    WHERE players.id = $2
+    SET team_id = $1, sold_for_amount = $2
+    WHERE players.id = $3
     RETURNING 1
 )
 UPDATE participant_teams
-SET balance = balance - $3
+SET balance = balance - $2
 WHERE participant_teams.id = $1
     AND EXISTS (SELECT 1 FROM player_update);

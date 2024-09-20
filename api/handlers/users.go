@@ -34,7 +34,7 @@ func GetUserteamPlayers(queries *db.Queries) http.HandlerFunc {
 		}
 
     if !dbUser.ParticipantTeamID.Valid {
-      resp["error"] = "User does not have a team"
+      resp["error"] = "You have not been assigned a team. A team will be assigned to you soon."
       utils.JSON(w, http.StatusBadRequest, resp)
       return
     }

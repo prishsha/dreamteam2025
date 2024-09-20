@@ -13,7 +13,9 @@ SELECT
      FROM participant_teams pt 
      JOIN users u ON u.participant_team_id = pt.id 
      WHERE u.id = $1) AS iplTeamName,
-    p.*
+    pt.balance AS teamBalance,
+    p.*,
+    p.sold_for_amount
 FROM players p
 JOIN participant_teams pt ON p.team_id = pt.id
 JOIN users u ON u.participant_team_id = pt.id

@@ -13,24 +13,24 @@ import (
 const assignTeamToPlayer = `-- name: AssignTeamToPlayer :exec
 WITH player_update AS (
     UPDATE players
-    SET team_id = $1
-    WHERE players.id = $2
+    SET team_id = $1, sold_for_amount = $2
+    WHERE players.id = $3
     RETURNING 1
 )
 UPDATE participant_teams
-SET balance = balance - $3
+SET balance = balance - $2
 WHERE participant_teams.id = $1
     AND EXISTS (SELECT 1 FROM player_update)
 `
 
 type AssignTeamToPlayerParams struct {
 	ID      int32 `json:"id"`
-	ID_2    int32 `json:"id2"`
 	Balance int32 `json:"balance"`
+	ID_2    int32 `json:"id2"`
 }
 
 func (q *Queries) AssignTeamToPlayer(ctx context.Context, arg AssignTeamToPlayerParams) error {
-	_, err := q.db.ExecContext(ctx, assignTeamToPlayer, arg.ID, arg.ID_2, arg.Balance)
+	_, err := q.db.ExecContext(ctx, assignTeamToPlayer, arg.ID, arg.Balance, arg.ID_2)
 	return err
 }
 

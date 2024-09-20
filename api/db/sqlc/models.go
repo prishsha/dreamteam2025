@@ -26,15 +26,17 @@ type ParticipantTeam struct {
 }
 
 type Player struct {
-	ID        int32          `json:"id"`
-	Name      string         `json:"name"`
-	Country   string         `json:"country"`
-	Role      string         `json:"role"`
-	Rating    int32          `json:"rating"`
-	BasePrice int32          `json:"basePrice"`
-	AvatarUrl sql.NullString `json:"avatarUrl"`
-	TeamID    sql.NullInt32  `json:"teamId"`
-	IplTeam   sql.NullInt64  `json:"iplTeam"`
+	ID            int32          `json:"id"`
+	Name          string         `json:"name"`
+	Country       string         `json:"country"`
+	Role          string         `json:"role"`
+	Rating        int32          `json:"rating"`
+	BasePrice     int32          `json:"basePrice"`
+	AvatarUrl     sql.NullString `json:"avatarUrl"`
+	TeamID        sql.NullInt32  `json:"teamId"`
+	IplTeam       sql.NullInt64  `json:"iplTeam"`
+	Unsold        bool           `json:"unsold"`
+	SoldForAmount int32          `json:"soldForAmount"`
 }
 
 type User struct {

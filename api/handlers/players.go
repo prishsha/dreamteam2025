@@ -103,8 +103,8 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 		err = queries.AssignTeamToPlayer(r.Context(),
 			db.AssignTeamToPlayerParams{
 				ID:      participatingTeam.ID,
-				ID_2:    currentPlayer.ID,
 				Balance: currentBidAmount,
+				ID_2:    currentPlayer.ID,
 			})
 
 		if err != nil {

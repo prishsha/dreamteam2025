@@ -1,12 +1,16 @@
 'use client'
 
 import { useRouter } from 'next/navigation';
+import UserProfile from '@/components/UserProfile';
 
 export default function LandingPage() {
   const router = useRouter();
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen">
+      <div className="absolute top-4 right-4">
+        <UserProfile />
+      </div>
       <div className="flex space-x-4">
         <button onClick={() => router.push('/players')} className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-300 text-xl font-bold">
           All Players

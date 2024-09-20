@@ -3,18 +3,19 @@
 import "./globals.css";
 import { Toast } from "@/components/Toast";
 import { useEffect, useState } from "react";
-import { IsAuthenticatedResponse } from "@/types/auth";
+import { IsAuthenticatedResponse, User } from "@/types/auth";
 import Head from "next/head";
 import Spinner from "@/components/Spinner";
+import { UserProvider } from "@/contexts/UserContext";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
 
   const checkAuthorization = () => {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/is-authenticated`, {
@@ -24,6 +25,7 @@ export default function RootLayout({
       .then((data: IsAuthenticatedResponse) => {
         if (data.is_authenticated) {
           setIsAuthenticated(true);
+          setUser(data.user || null);
         }
         setLoading(false);
       }).catch(err => {
@@ -47,7 +49,9 @@ export default function RootLayout({
             <Spinner />
           </div>
         ) : isAuthenticated ? (
-          children
+          <UserProvider user={user}>
+            {children}
+          </UserProvider>
         ) : (
           <div className="flex-col items-center flex justify-center h-[calc(100vh-60px)]">
             <button
