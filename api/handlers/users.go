@@ -82,13 +82,13 @@ func GetUserTeamPlayers(queries *db.Queries) http.HandlerFunc {
 		batsmanCountSatisfied := batsmanCount >= 4
 		allRounderCountSatisfied := allRounderCount >= 2
 		wicketKeeperCountSatisfied := wicketKeeperCount >= 1
-		internationalCountSatsisfied := internationalCount >= 4
+		internationalCountSatsisfied := internationalCount <= 4
 
 		resp["bowlerCountSatisfied"] = bowlerCountSatisfied
 		resp["batsmanCountSatisfied"] = batsmanCountSatisfied
 		resp["allRounderCountSatisfied"] = allRounderCountSatisfied
 		resp["wicketKeeperCountSatisfied"] = wicketKeeperCountSatisfied
-		resp["internationalCountSatsisfied"] = internationalCountSatsisfied
+		resp["internationalCountSatisfied"] = internationalCountSatsisfied
 
 		utils.JSON(w, http.StatusOK, resp)
 	}
@@ -148,7 +148,7 @@ func GetAllUserTeamPlayers(queries *db.Queries) http.HandlerFunc {
 			BatsmanCountSatisfied        bool        `json:"batsmanCountSatisfied"`
 			AllRounderCountSatisfied     bool        `json:"allRounderCountSatisfied"`
 			WicketKeeperCountSatisfied   bool        `json:"wicketKeeperCountSatisfied"`
-			InternationalCountSatsisfied bool        `json:"internationalCountSatsisfied"`
+			InternationalCountSatsisfied bool        `json:"internationalCountSatisfied"`
 		}
 
 		var allTeamPlayersResponse []AllTeamPlayers
@@ -242,7 +242,7 @@ func GetAllUserTeamPlayers(queries *db.Queries) http.HandlerFunc {
       allTeamPlayersResponse[i].BatsmanCountSatisfied = batsmanCount >= 4
       allTeamPlayersResponse[i].AllRounderCountSatisfied = allRounderCount >= 2
       allTeamPlayersResponse[i].WicketKeeperCountSatisfied = wicketKeeperCount >= 1
-      allTeamPlayersResponse[i].InternationalCountSatsisfied = internationalCount >= 4
+      allTeamPlayersResponse[i].InternationalCountSatsisfied = internationalCount <= 4
 		}
 
 		utils.JSON(w, http.StatusOK, allTeamPlayersResponse)
