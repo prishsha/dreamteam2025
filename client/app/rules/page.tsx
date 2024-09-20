@@ -43,7 +43,7 @@ const RulesPage: React.FC = () => {
 
             <Section title="Bidding Rules">
               <ul className="space-y-2 text-gray-300">
-                <ListItem>The Purse amount will be 75 crore.</ListItem>
+                <ListItem>The Purse amount will be 70 crore.</ListItem>
                 <ListItem>The bidding process will be initiated by the Auctioneer.</ListItem>
                 <ListItem>To place a bid, one member from a team is required to raise the placard only once.</ListItem>
                 <ListItem>Bid once placed can&apos;t be canceled.</ListItem>
