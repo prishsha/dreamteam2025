@@ -60,8 +60,23 @@ const AdminPage = () => {
   const handleEndBidding = () => {
     setModalText("Are you sure you want to finish bidding?");
     setModalAction(() => () => {
-      // TODO: Implement finish bidding logic
-      showToast("Finish bidding logic not implemented", ToastType.ERROR)
+
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/game/end`, {
+        credentials: "include",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((response) => {
+        if (response.ok) {
+          showToast("Bidding ended successfully", ToastType.SUCCESS)
+        } else {
+          showToast("Failed to end bidding", ToastType.ERROR)
+        }
+      }).catch((error) => {
+        showToast("Failed to end bidding: " + error, ToastType.ERROR)
+      });
+
     });
     setIsModalOpen(true);
   };
@@ -314,7 +329,7 @@ const AdminPage = () => {
                   >
                     Set Unsold
                   </button>
-                  
+
                 </div>
               </>
             ) : (

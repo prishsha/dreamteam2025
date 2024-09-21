@@ -28,6 +28,7 @@ func (s *Server) HandleRoutes(mainRouter *chi.Mux) {
 
 	mainRouter.Get("/game/ws", handlers.GameStateSocket(s.ClientManager, s.GameState))
 	mainRouter.Post("/game/start", handlers.StartBidding(s.Queries, s.ClientManager, s.GameState))
+  mainRouter.Post("/game/end", handlers.EndBidding(s.Queries, s.ClientManager, s.GameState))
 
 	mainRouter.Get("/auth/login", handlers.GetAuthURLHandler(s.OauthConf))
 	mainRouter.Get("/auth/callback", handlers.CallbackHandler(s.Queries, s.OauthConf))

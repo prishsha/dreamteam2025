@@ -21,6 +21,10 @@ type UnsoldMessage struct {
   Player db.GetRandomAvailablePlayerRow `json:"player"`
 }
 
+type EndBidMessage struct {
+  Type string `json:"type"`
+}
+
 type ServerMessage struct {
 	Message   json.RawMessage     `json:"message,omitempty"`
 	GameState *GameState `json:"gameState,omitempty"`

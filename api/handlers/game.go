@@ -64,6 +64,34 @@ func StartBidding(queries *db.Queries, clientManger *models.ClientManager, gameS
 	return func(w http.ResponseWriter, r *http.Request) {
 		var resp map[string]interface{} = make(map[string]interface{})
 
+		jwtTokenCookie, err := r.Cookie("token")
+
+		if err != nil {
+			resp["error"] = "No token found"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		userId, errMsg, status := utils.GetUserIdFromJWT(jwtTokenCookie.Value)
+		if errMsg != "" {
+			resp["error"] = errMsg
+			utils.JSON(w, status, resp)
+			return
+		}
+
+		dbUser, err := queries.GetUser(r.Context(), userId)
+		if err != nil {
+			resp["error"] = err.Error()
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
+
+		if !utils.IsAdmin(dbUser.Email) {
+			resp["error"] = "Unauthorized"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
 		if gameState.IsFinished {
 			resp["error"] = "Game is already finished"
 			utils.JSON(w, http.StatusBadRequest, resp)
@@ -104,6 +132,81 @@ func StartBidding(queries *db.Queries, clientManger *models.ClientManager, gameS
 
 		clientManger.Broadcast <- &models.ServerMessage{
 			GameState: gameState,
+		}
+
+		utils.JSON(w, http.StatusOK, gameState)
+	}
+}
+
+func EndBidding(queries *db.Queries, clientManger *models.ClientManager, gameState *models.GameState) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var resp map[string]interface{} = make(map[string]interface{})
+
+		jwtTokenCookie, err := r.Cookie("token")
+
+		if err != nil {
+			resp["error"] = "No token found"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		userId, errMsg, status := utils.GetUserIdFromJWT(jwtTokenCookie.Value)
+		if errMsg != "" {
+			resp["error"] = errMsg
+			utils.JSON(w, status, resp)
+			return
+		}
+
+		dbUser, err := queries.GetUser(r.Context(), userId)
+		if err != nil {
+			resp["error"] = err.Error()
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
+
+		if !utils.IsAdmin(dbUser.Email) {
+			resp["error"] = "Unauthorized"
+			utils.JSON(w, http.StatusUnauthorized, resp)
+			return
+		}
+
+		if gameState.IsFinished {
+			resp["error"] = "Game is already finished"
+			utils.JSON(w, http.StatusBadRequest, resp)
+			return
+		}
+
+		if !gameState.IsBiddingActive {
+			resp["error"] = "Bidding is not active"
+			utils.JSON(w, http.StatusBadRequest, resp)
+			return
+		}
+
+		gameState.IsBiddingActive = false
+
+		gameState.IsFinished = true
+
+		gameState.CurrentPlayerInBid = nil
+		gameState.NextPlayerInBid = nil
+		gameState.CurrentBidAmount = 0
+		gameState.NextBidAmount = 0
+
+		endBidMessage := models.EndBidMessage{
+			Type: "endBid",
+		}
+
+		jsonData, err := json.Marshal(endBidMessage)
+
+		if err != nil {
+			resp["error"] = err.Error()
+			log.Error().Msg(err.Error())
+			utils.JSON(w, http.StatusInternalServerError, resp)
+			return
+		}
+
+		clientManger.Broadcast <- &models.ServerMessage{
+			GameState: gameState,
+			Message:   jsonData,
 		}
 
 		utils.JSON(w, http.StatusOK, gameState)

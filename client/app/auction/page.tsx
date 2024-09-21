@@ -12,6 +12,7 @@ import Confetti from 'react-confetti';
 import AssignModal from '@/components/AssignModal';
 import UnsoldModal from '@/components/UnsoldModal';
 import '@/styles/animations.css';
+import { useRouter } from "next/navigation";
 
 export default function AuctionPage() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -21,6 +22,8 @@ export default function AuctionPage() {
   const [showUnsoldModal, setShowUnsoldModal] = useState(false);
   const [assignInfo, setAssignInfo] = useState<AssignPlayerMessage | null>(null);
   const [unsoldInfo, setUnsoldInfo] = useState<UnsoldPlayerMessage | null>(null);
+
+  const router = useRouter();
 
   const getGradient = () => {
     return {
@@ -57,6 +60,8 @@ export default function AuctionPage() {
             const assignPlayerMessage: AssignPlayerMessage = serverMessage.message;
             // @ts-expect-error: We're not checking for the message type here
             const unsoldPlayerMessage: UnsoldPlayerMessage = serverMessage.message;
+            // @ts-expect-error: We're not checking for the message type here
+            const endBidMessage: UnsoldPlayerMessage = serverMessage.message;
 
             if (assignPlayerMessage.type === "assignPlayer") {
               setAssignInfo(assignPlayerMessage);
@@ -68,6 +73,10 @@ export default function AuctionPage() {
               setUnsoldInfo(unsoldPlayerMessage);
               setShowUnsoldModal(true);
               setTimeout(() => setShowUnsoldModal(false), 5000);
+            }
+
+            if (endBidMessage.type === "endBid") {
+              router.push('/myteam');
             }
           }
 

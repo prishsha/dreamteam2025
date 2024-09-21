@@ -23,3 +23,7 @@ export interface UnsoldPlayerMessage {
   type: string;
   player: Player;
 }
+
+export interface EndBidMessage {
+  type: string;
+}
