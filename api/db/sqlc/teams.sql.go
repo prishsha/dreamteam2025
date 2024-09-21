@@ -119,18 +119,13 @@ func (q *Queries) GetParticipatingTeam(ctx context.Context, id int32) (Participa
 
 const getTeamPlayers = `-- name: GetTeamPlayers :many
 SELECT 
-    (
-      SELECT pt.name 
-     FROM participant_teams pt 
-     JOIN users u ON u.participant_team_id = pt.id 
-     WHERE u.id = $1
-    ) AS ipl_team_name,
+    pt.name AS ipl_team_name,
     pt.balance AS team_balance,
     p.id, p.name, p.country, p.role, p.rating, p.base_price, p.avatar_url, p.team_id, p.ipl_team, p.is_unsold, p.sold_for_amount
-FROM players p
-JOIN participant_teams pt ON p.team_id = pt.id
-JOIN users u ON u.participant_team_id = pt.id
-WHERE u.id = $1
+FROM participant_teams pt
+INNER JOIN players p ON p.team_id = pt.id
+WHERE pt.id = $1
+ORDER BY p.id
 `
 
 type GetTeamPlayersRow struct {
@@ -149,7 +144,7 @@ type GetTeamPlayersRow struct {
 	SoldForAmount int32          `json:"soldForAmount"`
 }
 
-func (q *Queries) GetTeamPlayers(ctx context.Context, id int64) ([]GetTeamPlayersRow, error) {
+func (q *Queries) GetTeamPlayers(ctx context.Context, id int32) ([]GetTeamPlayersRow, error) {
 	rows, err := q.db.QueryContext(ctx, getTeamPlayers, id)
 	if err != nil {
 		return nil, err
@@ -158,6 +153,75 @@ func (q *Queries) GetTeamPlayers(ctx context.Context, id int64) ([]GetTeamPlayer
 	var items []GetTeamPlayersRow
 	for rows.Next() {
 		var i GetTeamPlayersRow
+		if err := rows.Scan(
+			&i.IplTeamName,
+			&i.TeamBalance,
+			&i.ID,
+			&i.Name,
+			&i.Country,
+			&i.Role,
+			&i.Rating,
+			&i.BasePrice,
+			&i.AvatarUrl,
+			&i.TeamID,
+			&i.IplTeam,
+			&i.IsUnsold,
+			&i.SoldForAmount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUserTeamPlayers = `-- name: GetUserTeamPlayers :many
+SELECT 
+    (
+      SELECT pt.name 
+     FROM participant_teams pt 
+     JOIN users u ON u.participant_team_id = pt.id 
+     WHERE u.id = $1
+    ) AS ipl_team_name,
+    pt.balance AS team_balance,
+    p.id, p.name, p.country, p.role, p.rating, p.base_price, p.avatar_url, p.team_id, p.ipl_team, p.is_unsold, p.sold_for_amount
+FROM players p
+JOIN participant_teams pt ON p.team_id = pt.id
+JOIN users u ON u.participant_team_id = pt.id
+WHERE u.id = $1
+`
+
+type GetUserTeamPlayersRow struct {
+	IplTeamName   string         `json:"iplTeamName"`
+	TeamBalance   int32          `json:"teamBalance"`
+	ID            int32          `json:"id"`
+	Name          string         `json:"name"`
+	Country       string         `json:"country"`
+	Role          string         `json:"role"`
+	Rating        int32          `json:"rating"`
+	BasePrice     int32          `json:"basePrice"`
+	AvatarUrl     sql.NullString `json:"avatarUrl"`
+	TeamID        sql.NullInt32  `json:"teamId"`
+	IplTeam       sql.NullInt64  `json:"iplTeam"`
+	IsUnsold      bool           `json:"isUnsold"`
+	SoldForAmount int32          `json:"soldForAmount"`
+}
+
+func (q *Queries) GetUserTeamPlayers(ctx context.Context, id int64) ([]GetUserTeamPlayersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUserTeamPlayers, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserTeamPlayersRow
+	for rows.Next() {
+		var i GetUserTeamPlayersRow
 		if err := rows.Scan(
 			&i.IplTeamName,
 			&i.TeamBalance,

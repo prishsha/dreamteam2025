@@ -39,7 +39,7 @@ func GetUserTeamPlayers(queries *db.Queries) http.HandlerFunc {
 			return
 		}
 
-		userTeamPlayers, err := queries.GetTeamPlayers(r.Context(), int64(dbUser.ID))
+		userTeamPlayers, err := queries.GetUserTeamPlayers(r.Context(), int64(dbUser.ID))
 
 		if err != nil {
 			resp["error"] = err.Error()

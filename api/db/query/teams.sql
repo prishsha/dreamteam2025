@@ -9,6 +9,16 @@ ORDER BY id;
 
 -- name: GetTeamPlayers :many
 SELECT 
+    pt.name AS ipl_team_name,
+    pt.balance AS team_balance,
+    p.*
+FROM participant_teams pt
+INNER JOIN players p ON p.team_id = pt.id
+WHERE pt.id = $1
+ORDER BY p.id;
+
+-- name: GetUserTeamPlayers :many
+SELECT 
     (
       SELECT pt.name 
      FROM participant_teams pt 
