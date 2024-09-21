@@ -54,5 +54,5 @@ export interface AllTeamPlayerResponse extends MyTeamStats {
 }
 
 export interface MyTeamPlayerResponse extends MyTeamStats {
-  players: MyTeamPlayer[];
+  players?: MyTeamPlayer[];
 }

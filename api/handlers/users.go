@@ -152,6 +152,7 @@ func GetAllUserTeamPlayers(queries *db.Queries) http.HandlerFunc {
 		}
 
 		var allTeamPlayersResponse []AllTeamPlayers
+		allTeamPlayersResponse = make([]AllTeamPlayers, 0)
 
 		for _, userTeamPlayer := range allUserTeamPlayers {
 			var teamExists bool = false
@@ -232,17 +233,17 @@ func GetAllUserTeamPlayers(queries *db.Queries) http.HandlerFunc {
 				}
 			}
 
-      allTeamPlayersResponse[i].BowlerCount = bowlerCount
-      allTeamPlayersResponse[i].BatsmanCount = batsmanCount
-      allTeamPlayersResponse[i].AllRounderCount = allRounderCount
-      allTeamPlayersResponse[i].WicketKeeperCount = wicketKeeperCount
-      allTeamPlayersResponse[i].InternationalCount = internationalCount
+			allTeamPlayersResponse[i].BowlerCount = bowlerCount
+			allTeamPlayersResponse[i].BatsmanCount = batsmanCount
+			allTeamPlayersResponse[i].AllRounderCount = allRounderCount
+			allTeamPlayersResponse[i].WicketKeeperCount = wicketKeeperCount
+			allTeamPlayersResponse[i].InternationalCount = internationalCount
 
-      allTeamPlayersResponse[i].BowlerCountSatisfied = bowlerCount >= 4
-      allTeamPlayersResponse[i].BatsmanCountSatisfied = batsmanCount >= 4
-      allTeamPlayersResponse[i].AllRounderCountSatisfied = allRounderCount >= 2
-      allTeamPlayersResponse[i].WicketKeeperCountSatisfied = wicketKeeperCount >= 1
-      allTeamPlayersResponse[i].InternationalCountSatsisfied = internationalCount <= 4
+			allTeamPlayersResponse[i].BowlerCountSatisfied = bowlerCount >= 4
+			allTeamPlayersResponse[i].BatsmanCountSatisfied = batsmanCount >= 4
+			allTeamPlayersResponse[i].AllRounderCountSatisfied = allRounderCount >= 2
+			allTeamPlayersResponse[i].WicketKeeperCountSatisfied = wicketKeeperCount >= 1
+			allTeamPlayersResponse[i].InternationalCountSatsisfied = internationalCount <= 4
 		}
 
 		utils.JSON(w, http.StatusOK, allTeamPlayersResponse)
