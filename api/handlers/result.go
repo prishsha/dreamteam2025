@@ -98,7 +98,6 @@ func CalculateResult(queries *db.Queries) http.HandlerFunc {
 			batsmanCountSatisfied := batsmanCount >= 4
 			allRounderCountSatisfied := allRounderCount >= 2
 			wicketKeeperCountSatisfied := wicketKeeperCount >= 1
-			internationalCountSatsisfied := internationalCount <= 4
 
 			teamResult.ValidTeam = bowlerCountSatisfied && batsmanCountSatisfied && allRounderCountSatisfied && wicketKeeperCountSatisfied
 
