@@ -71,6 +71,10 @@ func GetUserTeamPlayers(queries *db.Queries) http.HandlerFunc {
 			}
 		}
 
+    if userTeamPlayers == nil || len(userTeamPlayers) == 0 {
+      userTeamPlayers = make([]db.GetUserTeamPlayersRow, 0)
+    }
+
 		resp["players"] = userTeamPlayers
 		resp["bowlerCount"] = bowlerCount
 		resp["batsmanCount"] = batsmanCount

@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"sort"
 
 	db "github.com/milindmadhukar/dreamteam/db/sqlc"
 	"github.com/milindmadhukar/dreamteam/utils"
@@ -70,86 +71,99 @@ func CalculateResult(queries *db.Queries) http.HandlerFunc {
 				return
 			}
 
+			// Sort players in descending order of rating
+			sort.Slice(teamPlayers, func(i, j int) bool {
+				return teamPlayers[i].Rating > teamPlayers[j].Rating
+			})
+
+      var remainingPlayers []db.GetTeamPlayersRow
+
+			top11 := teamPlayers
+			if len(teamPlayers) > 11 {
+				top11 = teamPlayers[:11]
+				remainingPlayers = teamPlayers[11:]
+			} else {
+				remainingPlayers = []db.GetTeamPlayersRow{}
+			}
+
+			// Check and adjust for foreign players limit
+			foreignCount := 0
+			for _, player := range top11 {
+				if player.Country != "India" {
+					foreignCount++
+				}
+			}
+
+			for foreignCount > 4 && len(remainingPlayers) > 0 {
+				// Find the lowest rated foreign player in top11
+				lowestForeignIndex := -1
+				lowestForeignRating := int32(1000000)
+				for i, player := range top11 {
+					if player.Country != "India" && player.Rating < lowestForeignRating {
+						lowestForeignIndex = i
+						lowestForeignRating = player.Rating
+					}
+				}
+
+				// Find the highest rated Indian player in remainingPlayers
+				highestIndianIndex := -1
+				highestIndianRating := int32(0)
+				for i, player := range remainingPlayers {
+					if !(player.Country != "India") && player.Rating > highestIndianRating {
+						highestIndianIndex = i
+						highestIndianRating = player.Rating
+					}
+				}
+
+				if lowestForeignIndex != -1 && highestIndianIndex != -1 {
+					// Swap players
+					top11[lowestForeignIndex], remainingPlayers[highestIndianIndex] = remainingPlayers[highestIndianIndex], top11[lowestForeignIndex]
+					foreignCount--
+				} else {
+					break
+				}
+			}
+
+			// Check and adjust for role requirements
 			bowlerCount := 0
 			batsmanCount := 0
-			allRounderCount := 0
-			wicketKeeperCount := 0
-			internationalCount := 0
+			allrounderCount := 0
+			wicketkeeperCount := 0
 
-			for _, player := range teamPlayers {
-				if player.Role == "Bowler" {
+			for _, player := range top11 {
+				switch player.Role {
+				case "Bowler":
 					bowlerCount++
-				}
-				if player.Role == "Batsman" {
+				case "Batsman":
 					batsmanCount++
-				}
-				if player.Role == "All Rounder" {
-					allRounderCount++
-				}
-				if player.Role == "Wicket Keeper" {
-					wicketKeeperCount++
-				}
-				if player.Country != "India" {
-					internationalCount++
+				case "All-rounder":
+					allrounderCount++
+				case "Wicket-keeper":
+					wicketkeeperCount++
 				}
 			}
 
-			bowlerCountSatisfied := bowlerCount >= 4
-			batsmanCountSatisfied := batsmanCount >= 4
-			allRounderCountSatisfied := allRounderCount >= 2
-			wicketKeeperCountSatisfied := wicketKeeperCount >= 1
+			teamResult.ValidTeam = bowlerCount >= 4 && batsmanCount >= 4 && allrounderCount >= 2 && wicketkeeperCount >= 1 && foreignCount <= 4
 
-			teamResult.ValidTeam = bowlerCountSatisfied && batsmanCountSatisfied && allRounderCountSatisfied && wicketKeeperCountSatisfied
-
-			if !teamResult.ValidTeam {
-				TeamResultResponse = append(TeamResultResponse, teamResult)
-				continue
+			if teamResult.ValidTeam {
+				teamResult.Players = top11
+				// Calculate total rating
+				for _, player := range top11 {
+					teamResult.TotalRating += player.Rating
+				}
+			} else {
+				teamResult.Players = nil
+				teamResult.TotalRating = 0
 			}
 
-			bowlers := make([]db.GetTeamPlayersRow, 0)
-			batsmen := make([]db.GetTeamPlayersRow, 0)
-			wicketKeepers := make([]db.GetTeamPlayersRow, 0)
-			allRounders := make([]db.GetTeamPlayersRow, 0)
-
-			for _, player := range teamPlayers {
-				if player.Role == "Bowler" {
-					bowlers = append(bowlers, player)
-				}
-				if player.Role == "Batsman" {
-					batsmen = append(batsmen, player)
-				}
-				if player.Role == "Wicket Keeper" {
-					wicketKeepers = append(wicketKeepers, player)
-				}
-				if player.Role == "All Rounder" {
-					allRounders = append(allRounders, player)
-				}
-			}
-
-			top4Bowlers := utils.GetTopXPlayers(bowlers, 4)
-			top4Batsmen := utils.GetTopXPlayers(batsmen, 4)
-			top2AllRounders := utils.GetTopXPlayers(allRounders, 2)
-			top1WicketKeeper := utils.GetTopXPlayers(wicketKeepers, 1)
-
-			for _, player := range top4Bowlers {
+			// Calculate total rating
+			for _, player := range top11 {
 				teamResult.TotalRating += player.Rating
 			}
-			for _, player := range top4Batsmen {
-				teamResult.TotalRating += player.Rating
-			}
-			for _, player := range top2AllRounders {
-				teamResult.TotalRating += player.Rating
-			}
-			for _, player := range top1WicketKeeper {
-				teamResult.TotalRating += player.Rating
-			}
-
-			teamResult.Players = append(teamResult.Players, top4Bowlers...)
-			teamResult.Players = append(teamResult.Players, top4Batsmen...)
-			teamResult.Players = append(teamResult.Players, top2AllRounders...)
-			teamResult.Players = append(teamResult.Players, top1WicketKeeper...)
 
 			TeamResultResponse = append(TeamResultResponse, teamResult)
+
+			fmt.Println("TeamResultResponse: ", TeamResultResponse)
 
 			fmt.Println("TeamResultResponse: ", TeamResultResponse)
 		}
