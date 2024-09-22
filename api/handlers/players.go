@@ -125,18 +125,28 @@ func AssignTeamToPlayer(queries *db.Queries, clientManager *models.ClientManager
 		gameState.CurrentBidAmount = gameState.NextPlayerInBid.BasePrice
 		gameState.NextBidAmount = utils.CalculateNextBidAmount(gameState.NextPlayerInBid.BasePrice)
 
-		nextPlayer, err := queries.GetRandomAvailablePlayer(r.Context())
-
-		if err != nil {
-			if err == sql.ErrNoRows {
-				gameState.NextPlayerInBid = nil
-			} else {
-				resp["error"] = err.Error()
-				log.Error().Msg(err.Error())
-				utils.JSON(w, http.StatusInternalServerError, resp)
-				return
+		var nextPlayer db.GetRandomAvailablePlayerRow
+		var fetchAttempts int = 0
+		for fetchAttempts < 30 {
+      nextPlayer, err := queries.GetRandomAvailablePlayer(r.Context())
+			if err != nil {
+				if err == sql.ErrNoRows {
+					gameState.NextPlayerInBid = nil
+					break
+				} else {
+					resp["error"] = err.Error()
+					log.Error().Msg(err.Error())
+					utils.JSON(w, http.StatusInternalServerError, resp)
+					return
+				}
 			}
-		} else {
+			if nextPlayer.ID != currentPlayer.ID {
+				gameState.NextPlayerInBid = &nextPlayer
+				break
+			}
+			fetchAttempts++
+		}
+		if fetchAttempts == 10 {
 			gameState.NextPlayerInBid = &nextPlayer
 		}
 
