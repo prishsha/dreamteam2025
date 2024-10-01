@@ -1,5 +1,6 @@
 api/bin
-api/configs/*
+api/configs/config.yml
+api/configs/config.prod.yml
 api/tmp
 api/app.log
 players.csv
@@ -42,3 +43,4 @@ client/next-env.d.ts
 
 client/.env
 api/memo.md
+api/main

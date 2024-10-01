@@ -1,0 +1,27 @@
+database:
+  # Host address of the database
+  host: 'localhost'
+  # Username of the database account
+  user: 'postgres'
+  # Password for the used database account
+  password: 'password'
+  # Database name
+  name: 'dreamteam'
+  # Database port
+  port: '5432'
+
+# API configurations
+api:
+  host: 'localhost'
+  port: '8069'
+  jwt_secret_key : "RandomSecretKey"
+  admin_emails: ['admin1@vitstudent.ac.in', 'admin2@vitstudent.ac.in']
+  oauth_state: "ThisIsARandomOauthState"
+  session_key: "RandomSessionKey"
+  is_prod: false
+  frontend_url: "http://localhost:3000"
+
+google_oauth:
+  client_id: 'CLIENT_ID'
+  client_secret: 'CLIENT_SECRET'
+  redirect_url: 'https://localhost:8069/auth/callback'
