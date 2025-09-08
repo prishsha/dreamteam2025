@@ -30,7 +30,7 @@ export default function PlayersPage() {
         return res.json();
       })
       .then((data: MyTeamPlayerResponse) => {
-        const teamBalance = data.players[0].teamBalance;
+        const teamBalance = data.players?.[0]?.teamBalance ?? 0;
         setTeamBalance(teamBalance);
 
         setTeamStats({
@@ -46,7 +46,7 @@ export default function PlayersPage() {
           internationalCountSatisfied: data.internationalCountSatisfied
         });
 
-        const newData: Player[] = data.players.map((player: MyTeamPlayer) => ({
+        const newData: Player[] = data.players?.map((player: MyTeamPlayer) => ({
           id: player.id,
           name: player.name,
           country: player.country,
@@ -61,8 +61,8 @@ export default function PlayersPage() {
             Valid: player.iplTeamName !== "",
           },
           isUnsold: player.isUnsold,
-          soldForAmount: player.soldForAmount
-        }));
+          soldForAmount: player.soldForAmount,
+        })) ?? [];
 
         setPlayers(newData);
         setIsLoading(false);
