@@ -7,7 +7,6 @@ import UserProfile from "./UserProfile";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user } = useUser(); 
 
   const links = [
     { href: "/players", label: "All Players List" },
