@@ -7,7 +7,7 @@ export default function LandingPage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen p-4 mt-20">
+    <div className="flex flex-col justify-center items-center min-h-screen p-4">
       <div className="absolute top-4 right-4">
         {/* <UserProfile /> */}
       </div>
