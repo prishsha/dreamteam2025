@@ -7,6 +7,7 @@ import { IsAuthenticatedResponse, User } from "@/types/auth";
 import Head from "next/head";
 import Spinner from "@/components/Spinner";
 import { UserProvider } from "@/contexts/UserContext";
+import Navbar from "@/components/Navbar";
 
 export default function RootLayout({
   children,
@@ -50,6 +51,7 @@ export default function RootLayout({
           </div>
         ) : isAuthenticated ? (
           <UserProvider user={user}>
+             <Navbar />
             {children}
           </UserProvider>
         ) : (

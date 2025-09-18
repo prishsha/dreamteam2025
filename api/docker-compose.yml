@@ -3,7 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    network_mode: host
+    ports:
+      - "8069:8069"
     volumes:
       - ./configs/config.prod.yml:/app/configs/config.yml
       - ./assets/:/app/assets

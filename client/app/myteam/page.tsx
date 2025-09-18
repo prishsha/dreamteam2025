@@ -76,7 +76,7 @@ export default function PlayersPage() {
 
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-14">
       {isLoading ? (
         <div className="flex justify-center items-center h-screen">
           <Spinner />

@@ -9,7 +9,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen p-4">
       <div className="absolute top-4 right-4">
-        <UserProfile />
+        {/* <UserProfile /> */}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-3xl">
         <button onClick={() => router.push('/players')} className="w-full px-6 py-3 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 transition duration-300 text-xl font-bold">

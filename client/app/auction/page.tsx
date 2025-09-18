@@ -116,7 +116,7 @@ export default function AuctionPage() {
   }, []);
 
   return (
-    <div className="min-h-screen text-white p-8 flex flex-col items-center justify-center" style={getGradient()}>
+    <div className="min-h-screen mt-6 text-white p-8 flex flex-col items-center justify-center" style={getGradient()}>
       {gameState?.IsBiddingActive && gameState.CurrentPlayerInBid ? (
         <div className="flex flex-col md:flex-row items-center justify-between w-full h-full gap-8">
           <div className="flex-1 flex flex-col items-center justify-center h-full z-10 relative">
