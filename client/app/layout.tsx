@@ -8,6 +8,7 @@ import Head from "next/head";
 import Spinner from "@/components/Spinner";
 import { UserProvider } from "@/contexts/UserContext";
 import Navbar from "@/components/Navbar";
+import { usePathname } from "next/navigation";
 
 export default function RootLayout({
   children,
@@ -17,6 +18,9 @@ export default function RootLayout({
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
+
+  const pathname = usePathname();
+  const showNavbar = !pathname.startsWith("/admin")
 
   const checkAuthorization = () => {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/is-authenticated`, {
@@ -51,7 +55,7 @@ export default function RootLayout({
           </div>
         ) : isAuthenticated ? (
           <UserProvider user={user}>
-             <Navbar />
+             {showNavbar && <Navbar />}
             {children}
           </UserProvider>
         ) : (
