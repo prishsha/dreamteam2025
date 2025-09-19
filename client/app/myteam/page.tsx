@@ -30,12 +30,15 @@ export default function PlayersPage() {
         return res.json();
       })
       .then((data: MyTeamPlayerResponse) => {
-        const teamBalance = data.teamBalance
-          ?? data.players?.[0]?.teamBalance
-          ?? 0;
-        setTeamBalance(teamBalance);
+        let balance: number;
 
-        console.log("Fetched team data:", data);
+        if (data.teamBalance !== undefined) {
+          balance = data.teamBalance;
+        } else if (data.players && data.players.length > 0) {
+          balance = data.players[0].teamBalance;
+        } else {
+          balance = 700000000; // 70 crore
+        }
 
         setTeamStats({
           bowlerCount: data.bowlerCount,
