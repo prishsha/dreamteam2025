@@ -30,8 +30,12 @@ export default function PlayersPage() {
         return res.json();
       })
       .then((data: MyTeamPlayerResponse) => {
-        const teamBalance = data.teamBalance ?? 0;
+        const teamBalance = data.teamBalance
+          ?? data.players?.[0]?.teamBalance
+          ?? 0;
         setTeamBalance(teamBalance);
+
+        console.log("Fetched team data:", data);
 
         setTeamStats({
           bowlerCount: data.bowlerCount,
