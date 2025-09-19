@@ -40,6 +40,8 @@ export default function PlayersPage() {
           balance = 700000000; // 70 crore
         }
 
+        setTeamBalance(balance);
+        
         setTeamStats({
           bowlerCount: data.bowlerCount,
           batsmanCount: data.batsmanCount,
