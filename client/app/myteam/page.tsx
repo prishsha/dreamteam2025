@@ -30,7 +30,7 @@ export default function PlayersPage() {
         return res.json();
       })
       .then((data: MyTeamPlayerResponse) => {
-        const teamBalance = data.players?.[0]?.teamBalance ?? 0;
+        const teamBalance = data.teamBalance ?? 0;
         setTeamBalance(teamBalance);
 
         setTeamStats({
