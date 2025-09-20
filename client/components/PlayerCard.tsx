@@ -4,6 +4,7 @@ import { humanizePrice } from '@/utils/humanize';
 import getTeamColours from '@/utils/teamColours';
 import Image from 'next/image';
 import RatingHolder from '@/assets/RatingHolder.svg';
+import DreamTeamLogo from '@/assets/dreamteam_logo.png'
 
 const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePrice, iplTeamName, avatarUrl }) => {
   const getBorder = () => {
@@ -41,7 +42,7 @@ const PlayerCard: React.FC<Player> = ({ id, name, country, role, rating, basePri
       <div className="relative h-80 pt-4">
         <div className="absolute inset-0 z-0">
           <Image
-            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/cardbg.png`}
+            src={DreamTeamLogo}
             alt="Dream Team Logo"
             className='opacity-30'
             layout='fill'
