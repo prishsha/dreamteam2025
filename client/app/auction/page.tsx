@@ -13,6 +13,7 @@ import AssignModal from '@/components/AssignModal';
 import UnsoldModal from '@/components/UnsoldModal';
 import '@/styles/animations.css';
 import { useRouter } from "next/navigation";
+import DreamTeamLogo from '@/assets/dreamteam_logo.png'
 
 export default function AuctionPage() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -122,7 +123,7 @@ export default function AuctionPage() {
           <div className="flex-1 flex flex-col items-center justify-center h-full z-10 relative">
             <div className="absolute inset-0 z-0 m-6">
               <Image
-                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/assets/cardbg.png`}
+                src={DreamTeamLogo}
                 alt="Dream Team Logo"
                 className='opacity-30'
                 layout='fill'
